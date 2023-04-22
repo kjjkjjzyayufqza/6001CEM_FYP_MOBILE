@@ -13,7 +13,9 @@ import ChatMessageInput from '../../components/ChatMessageInput'
 
 export const ChatScreen = () => {
   const [messages, setMessages] = useState<IMessage[]>([])
-  const [customInputMessage, setCustomInputMessage] = useState<string>('')
+  // const [customInputMessage, setCustomInputMessage] = useState<string>('')
+
+  const [test, setT] = useState<boolean>(false)
 
   useEffect(() => {
     setMessages([
@@ -33,46 +35,15 @@ export const ChatScreen = () => {
 
   const onSend = useCallback((messages = []) => {
     console.log(messages)
+    setT(true)
     // messages[0].user._id = 0
     setMessages(previousMessages =>
       GiftedChat.append(previousMessages, messages),
     )
   }, [])
 
-  const renderSend = (props: any) => {
-    return (
-      <View style={{flexDirection: 'row'}}>
-        <TouchableOpacity onPress={() => {}}>
-          <View style={{marginTop: 8}}>
-            <Icon
-              name='paperclip'
-              style={{
-                marginBottom: 10,
-                marginRight: 10,
-                transform: [{rotateY: '180deg'}],
-              }}
-              size={25}
-              color='blue'
-            />
-          </View>
-        </TouchableOpacity>
-        <Send {...props} text={customInputMessage} containerStyle={{borderWidth: 0}}>
-          <View>
-            <Icon
-              name='send'
-              style={{marginBottom: 10, marginRight: 10}}
-              size={25}
-              color='orange'
-            />
-          </View>
-        </Send>
-      </View>
-    )
-  }
-
   const customInputToolbar = (props: any) => {
     // console.log(props.text)
-    let c = renderSend(props)
     return (
       // <InputToolbar
       //   {...props}
@@ -86,11 +57,13 @@ export const ChatScreen = () => {
       <HStack space={3} w={'full'}>
         <View style={{width: '80%'}}>
           <ChatMessageInput
-            onTextUpdate={e => {
-              setCustomInputMessage(e)
+            props={props}
+            clearValue={test}
+            onClearValue={() => {
+              setT(false)
             }}></ChatMessageInput>
         </View>
-        {renderSend(props)}
+        {/* {renderSend(props)} */}
       </HStack>
     )
   }
@@ -131,7 +104,7 @@ export const ChatScreen = () => {
           name: 'TEST1',
         }}
         alwaysShowSend
-        renderSend={props => renderSend(props)}
+        // renderSend={props => renderSend(props)}
         renderBubble={props => customBubble(props)}
         renderInputToolbar={props => customInputToolbar(props)}
       />
