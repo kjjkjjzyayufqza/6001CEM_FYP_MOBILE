@@ -24,7 +24,7 @@ export const ChatMessageInput: React.FC<ChatMessageInputModel> = ({
   }
 
   useEffect(() => {
-    console.log(clearValue)
+    // console.log(clearValue)
     if (clearValue) {
       setValue('')
       setCustomInputMessage('')

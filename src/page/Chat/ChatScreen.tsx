@@ -10,12 +10,14 @@ import {
 } from 'react-native-gifted-chat'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import ChatMessageInput from '../../components/ChatMessageInput'
+import {postBotMessage} from '../../API'
+import {BotMessageBox} from '../../components/BotMessageBox'
 
 export const ChatScreen = () => {
   const [messages, setMessages] = useState<IMessage[]>([])
   // const [customInputMessage, setCustomInputMessage] = useState<string>('')
 
-  const [test, setT] = useState<boolean>(false)
+  const [needClearValue, setNeedClearValue] = useState<boolean>(false)
 
   useEffect(() => {
     setMessages([
@@ -26,20 +28,61 @@ export const ChatScreen = () => {
         user: {
           _id: 0,
           name: 'Bot',
-          // avatar: 'https://placeimg.com/140/140/any',
         },
-        // image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/2300px-React-icon.svg.png',
       },
     ])
+    return () => {
+      setMessages([])
+    }
   }, [])
 
-  const onSend = useCallback((messages = []) => {
-    console.log(messages)
-    setT(true)
-    // messages[0].user._id = 0
-    setMessages(previousMessages =>
-      GiftedChat.append(previousMessages, messages),
-    )
+  function makeid (length: number) {
+    let result = ''
+    const characters =
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+    const charactersLength = characters.length
+    let counter = 0
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength))
+      counter += 1
+    }
+    return result
+  }
+
+  const onSend = useCallback((messages: any[] = []) => {
+    setNeedClearValue(true)
+    const messageString = messages[0]?.text
+
+    setMessages(previousMessages => {
+      messages = [
+        {
+          _id: makeid(20),
+          createdAt: new Date(),
+          text: (
+            <BotMessageBox
+              sendMessage={messageString}
+              onMessage={res => {
+                setMessages(previousMessages => {
+                  messages = [
+                    {
+                      _id: makeid(20),
+                      createdAt: new Date(),
+                      text: res.data.botMessage,
+                      user: {_id: 0, name: 'Bot'},
+                    },
+                    ...messages,
+                  ]
+                  return GiftedChat.append(previousMessages, messages)
+                })
+              }}
+            />
+          ),
+          user: {_id: 0, name: 'Bot'},
+        },
+        ...messages,
+      ]
+      return GiftedChat.append(previousMessages, messages)
+    })
   }, [])
 
   const customInputToolbar = (props: any) => {
@@ -57,9 +100,9 @@ export const ChatScreen = () => {
       <View>
         <ChatMessageInput
           props={props}
-          clearValue={test}
+          clearValue={needClearValue}
           onClearValue={() => {
-            setT(false)
+            setNeedClearValue(false)
           }}></ChatMessageInput>
       </View>
     )
@@ -86,6 +129,7 @@ export const ChatScreen = () => {
   return (
     <View style={{flex: 1}}>
       <GiftedChat
+        onQuickReply={() => {}}
         messages={messages}
         renderUsernameOnMessage={true}
         renderAvatar={() => (
