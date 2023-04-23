@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const styles = StyleSheet.create({
+export const Basestyles = StyleSheet.create({
   baseShadow: {
     shadowColor: '#000000',
     shadowOffset: {

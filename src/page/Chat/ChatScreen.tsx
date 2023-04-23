@@ -54,17 +54,14 @@ export const ChatScreen = () => {
       //   }}
       //   renderSend={renderSend}
       // />
-      <HStack space={3} w={'full'}>
-        <View style={{width: '80%'}}>
-          <ChatMessageInput
-            props={props}
-            clearValue={test}
-            onClearValue={() => {
-              setT(false)
-            }}></ChatMessageInput>
-        </View>
-        {/* {renderSend(props)} */}
-      </HStack>
+      <View>
+        <ChatMessageInput
+          props={props}
+          clearValue={test}
+          onClearValue={() => {
+            setT(false)
+          }}></ChatMessageInput>
+      </View>
     )
   }
 
