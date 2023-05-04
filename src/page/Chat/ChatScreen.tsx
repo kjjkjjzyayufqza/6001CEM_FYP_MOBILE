@@ -1,4 +1,4 @@
-import {HStack, Image, Input, Text, View} from 'native-base'
+import {HStack, Image, Input, ScrollView, Text, View} from 'native-base'
 import React, {useCallback, useEffect, useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import {
@@ -6,12 +6,14 @@ import {
   GiftedChat,
   IMessage,
   InputToolbar,
+  Message,
+  MessageProps,
   Send,
 } from 'react-native-gifted-chat'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import ChatMessageInput from '../../components/ChatMessageInput'
 import {postBotMessage} from '../../API'
-import {BotMessageBox} from '../../components/BotMessageBox'
+import {BotMessageBox, makeid} from '../../components/BotMessageBox'
 
 export const ChatScreen = () => {
   const [messages, setMessages] = useState<IMessage[]>([])
@@ -23,7 +25,13 @@ export const ChatScreen = () => {
     setMessages([
       {
         _id: 1,
-        text: 'Hello, What can i help you ?',
+        text: (
+          <View>
+            <Text>
+              Hello, What can i help you?
+            </Text>
+          </View>
+        ) as any,
         createdAt: new Date(),
         user: {
           _id: 0,
@@ -36,47 +44,15 @@ export const ChatScreen = () => {
     }
   }, [])
 
-  function makeid (length: number) {
-    let result = ''
-    const characters =
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
-    const charactersLength = characters.length
-    let counter = 0
-    while (counter < length) {
-      result += characters.charAt(Math.floor(Math.random() * charactersLength))
-      counter += 1
-    }
-    return result
-  }
-
   const onSend = useCallback((messages: any[] = []) => {
     setNeedClearValue(true)
     const messageString = messages[0]?.text
-
     setMessages(previousMessages => {
       messages = [
         {
           _id: makeid(20),
           createdAt: new Date(),
-          text: (
-            <BotMessageBox
-              sendMessage={messageString}
-              onMessage={res => {
-                setMessages(previousMessages => {
-                  messages = [
-                    {
-                      _id: makeid(20),
-                      createdAt: new Date(),
-                      text: res.data.botMessage,
-                      user: {_id: 0, name: 'Bot'},
-                    },
-                    ...messages,
-                  ]
-                  return GiftedChat.append(previousMessages, messages)
-                })
-              }}
-            />
-          ),
+          text: <BotMessageBox sendMessage={messageString} />,
           user: {_id: 0, name: 'Bot'},
         },
         ...messages,
@@ -120,7 +96,20 @@ export const ChatScreen = () => {
         wrapperStyle={{
           left: {
             backgroundColor: '#FCFFFC',
+            // overflow: 'hidden'
           },
+        }}
+        renderMessageText={e => {
+          const user: string = e.currentMessage?.user.name ?? 'abc'
+          if (user == 'Bot') {
+            return <View p={2}>{e.currentMessage?.text}</View>
+          } else {
+            return (
+              <View p={2}>
+                <Text color={'white'}>{e.currentMessage?.text}</Text>
+              </View>
+            )
+          }
         }}
       />
     )
@@ -139,7 +128,9 @@ export const ChatScreen = () => {
             alt='icon'
             source={require('../../../public/img/botIcon.png')}></Image>
         )}
-        onSend={messages => onSend(messages)}
+        onSend={messages => {
+          onSend(messages)
+        }}
         user={{
           _id: 1,
           name: 'TEST1',

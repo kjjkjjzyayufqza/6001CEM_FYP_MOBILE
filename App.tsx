@@ -54,6 +54,13 @@ function App (): JSX.Element {
             name='Home'
             component={HomeScreen}
             options={{
+              headerStyle: {
+                backgroundColor: '#FFFFFF',
+              },
+              headerTintColor: '#000000',
+              headerTitleStyle: {
+                display: 'none',
+              },
               tabBarIcon: ({color, size}) => (
                 <FontAwesome name='home' color={color} size={size} />
               ),
