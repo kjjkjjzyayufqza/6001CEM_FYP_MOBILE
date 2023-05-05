@@ -17,6 +17,8 @@ import {
 } from 'native-base'
 import React from 'react'
 import SearchInput from '../../components/SearchInput'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import {TouchableOpacity} from 'react-native'
 
 export const HomeScreen = () => {
   return (
@@ -45,12 +47,8 @@ export const HomeScreen = () => {
               AJ
             </Avatar>
           </HStack>
-          <Box alignItems='center' p={5} flex={1}>
-            <SearchInput
-              props={null}
-              onClearValue={() => {}}
-              clearValue={false}
-            />
+          <Box alignItems='center' p={5} flex={1} zIndex={3}>
+            <SearchInput />
           </Box>
           <Box alignItems='center' p={5} flex={1}>
             <Center position='absolute' zIndex={2} bottom={'18px'} right={0}>
@@ -119,10 +117,153 @@ export const HomeScreen = () => {
           </Box>
           <HStack px={5} py={2}>
             <Text fontSize={20} fontWeight={600}>
-              {/* Categories */}
+              Categories
             </Text>
             <Spacer />
           </HStack>
+          <ScrollView horizontal={true} pb={5} px={5} pt={2}>
+            <TouchableOpacity>
+              <Box pr={4}>
+                <Box
+                  bg={'#ffffff'}
+                  borderWidth={1}
+                  borderColor={'#eaeaea'}
+                  p={2}
+                  rounded={10}>
+                  <HStack
+                    flex={1}
+                    alignItems={'center'}
+                    justifyContent={'center'}>
+                    <Box p={3} bg={'#E75B5B'} rounded={8}>
+                      <MaterialCommunityIcons
+                        name='human'
+                        size={30}
+                        color={'white'}
+                      />
+                    </Box>
+                    <Text px={3} color={'#545454'} w={'100px'}>
+                      General Practitioner
+                    </Text>
+                  </HStack>
+                </Box>
+              </Box>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Box pr={4}>
+                <Box
+                  bg={'#ffffff'}
+                  borderWidth={1}
+                  borderColor={'#eaeaea'}
+                  p={2}
+                  rounded={10}>
+                  <HStack
+                    flex={1}
+                    alignItems={'center'}
+                    justifyContent={'center'}>
+                    <Box p={3} bg={'#0064A9'} rounded={8}>
+                      <MaterialCommunityIcons
+                        name='cards-heart'
+                        size={30}
+                        color={'white'}
+                      />
+                    </Box>
+                    <Text px={3} color={'#545454'} w={'100px'}>
+                      Internal Medicine
+                    </Text>
+                  </HStack>
+                </Box>
+              </Box>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Box pr={4}>
+                <Box
+                  bg={'#ffffff'}
+                  borderWidth={1}
+                  borderColor={'#eaeaea'}
+                  p={2}
+                  rounded={10}>
+                  <HStack
+                    flex={1}
+                    alignItems={'center'}
+                    justifyContent={'center'}>
+                    <Box p={3} bg={'#DFDF4B'} rounded={8}>
+                      <MaterialCommunityIcons
+                        name='hand-back-right-outline'
+                        size={30}
+                        color={'white'}
+                      />
+                    </Box>
+                    <Text px={3} color={'#545454'} w={'100px'}>
+                      Dermatology
+                    </Text>
+                  </HStack>
+                </Box>
+              </Box>
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <Box pr={4}>
+                <Box
+                  bg={'#ffffff'}
+                  borderWidth={1}
+                  borderColor={'#eaeaea'}
+                  p={2}
+                  rounded={10}>
+                  <HStack
+                    flex={1}
+                    alignItems={'center'}
+                    justifyContent={'center'}>
+                    <Box p={3} bg={'#B48CE7'} rounded={8}>
+                      <MaterialCommunityIcons
+                        name='eye-outline'
+                        size={30}
+                        color={'white'}
+                      />
+                    </Box>
+                    <Text px={3} color={'#545454'} w={'100px'}>
+                      Ophthalmology
+                    </Text>
+                  </HStack>
+                </Box>
+              </Box>
+            </TouchableOpacity>
+          </ScrollView>
+          <HStack px={5} py={2}>
+            <Text fontSize={20} fontWeight={600}>
+              News
+            </Text>
+            <Spacer />
+          </HStack>
+          <VStack pb={5} pt={2} px={5}>
+            <Box
+              rounded='lg'
+              overflow='hidden'
+              borderColor='coolGray.200'
+              borderWidth='1'
+              _dark={{
+                borderColor: 'coolGray.600',
+                backgroundColor: 'white',
+              }}
+              _light={{
+                backgroundColor: 'white',
+              }}
+              p={2}>
+              <HStack space={4}>
+                <AspectRatio w='100px' ratio={16 / 9}>
+                  <Image
+                    resizeMode='cover'
+                    source={{
+                      uri: 'https://cms-api-in.myhealthcare.co/image/20220910103120.jpeg',
+                    }}
+                    alt='Picture of a Flower'
+                  />
+                </AspectRatio>
+                <Text w={'70%'}>
+                  We have added a new number of physicians to our general
+                  clinic.
+                </Text>
+              </HStack>
+            </Box>
+          </VStack>
         </VStack>
       </View>
     </ScrollView>

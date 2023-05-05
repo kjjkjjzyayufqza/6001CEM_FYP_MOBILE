@@ -5,90 +5,102 @@
  * @format
  */
 
-import type {PropsWithChildren} from 'react'
 import React from 'react'
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-  View,
-} from 'react-native'
 
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import {
-  Box,
-  Center,
-  HStack,
-  Image,
-  NativeBaseProvider,
-  Pressable,
-  Text,
-  VStack,
-} from 'native-base'
+import {NativeBaseProvider} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Entypo from 'react-native-vector-icons/Entypo'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen'
 import {HomeScreen} from './src/page/Home/HomeScreen'
 import {ChatScreen} from './src/page/Chat/ChatScreen'
 import {AccountScreen} from './src/page/Account/AccountScreen'
+import {navigationRef} from './src/components/RootNavigation'
+import {SearchListScreen} from './src/page/SearchList/SearchListScreen'
 
 const Tab = createBottomTabNavigator()
+const Stack = createNativeStackNavigator()
+
+function MainTabView () {
+  return (
+    <Tab.Navigator>
+      <Tab.Screen
+        name='Home'
+        component={HomeScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: '#00B9FF',
+            height: 45,
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {},
+          headerTitleAlign: 'center',
+          tabBarIcon: ({color, size}) => (
+            <FontAwesome name='home' color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name='Chat'
+        component={ChatScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: '#00B9FF',
+            height: 45,
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {},
+          headerTitleAlign: 'center',
+          tabBarIcon: ({color, size}) => (
+            <Entypo name='chat' color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name='Account'
+        component={AccountScreen}
+        options={{
+          headerStyle: {
+            backgroundColor: '#00B9FF',
+            height: 45,
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {},
+          headerTitleAlign: 'center',
+          tabBarIcon: ({color, size}) => (
+            <MaterialCommunityIcons name='account' color={color} size={size} />
+          ),
+        }}
+      />
+    </Tab.Navigator>
+  )
+}
 
 function App (): JSX.Element {
   return (
-    <NavigationContainer>
+    <NavigationContainer ref={navigationRef}>
       <NativeBaseProvider>
-        <Tab.Navigator>
-          <Tab.Screen
-            name='Home'
-            component={HomeScreen}
+        <Stack.Navigator>
+          <Stack.Screen
+            name='Main'
+            component={MainTabView}
+            options={{headerShown: false}}
+          />
+          <Stack.Screen
+            name='SearchList'
+            component={SearchListScreen}
             options={{
               headerStyle: {
-                backgroundColor: '#FFFFFF',
+                backgroundColor: '#00B9FF',
               },
-              headerTintColor: '#000000',
-              headerTitleStyle: {
-                display: 'none',
-              },
-              tabBarIcon: ({color, size}) => (
-                <FontAwesome name='home' color={color} size={size} />
-              ),
+              headerTintColor: '#FFFFFF',
+              headerTitleStyle: {},
+              headerTitleAlign: 'center',
             }}
           />
-          <Tab.Screen
-            name='Chat'
-            component={ChatScreen}
-            options={{
-              tabBarIcon: ({color, size}) => (
-                <Entypo name='chat' color={color} size={size} />
-              ),
-            }}
-          />
-          <Tab.Screen
-            name='Account'
-            component={AccountScreen}
-            options={{
-              tabBarIcon: ({color, size}) => (
-                <MaterialCommunityIcons
-                  name='account'
-                  color={color}
-                  size={size}
-                />
-              ),
-            }}
-          />
-        </Tab.Navigator>
+        </Stack.Navigator>
       </NativeBaseProvider>
     </NavigationContainer>
   )
