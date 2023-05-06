@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@gorhom/bottom-sheet": "^4",
+    "@react-native-async-storage/async-storage": "^1.18.1",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/native-stack": "^6.9.12",
@@ -28,7 +29,8 @@
     "react-native-screens": "^3.20.0",
     "react-native-svg": "12.5.1",
     "react-native-vector-icons": "^9.2.0",
-    "react-native-web": "0.17.1"
+    "react-native-web": "0.17.1",
+    "yup": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

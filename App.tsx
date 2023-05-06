@@ -19,6 +19,10 @@ import {ChatScreen} from './src/page/Chat/ChatScreen'
 import {AccountScreen} from './src/page/Account/AccountScreen'
 import {navigationRef} from './src/components/RootNavigation'
 import {SearchListScreen} from './src/page/SearchList/SearchListScreen'
+import {LoginScreen} from './src/page/Login/LoginScreen'
+import {ForgotPSScreen} from './src/page/ForgotPS/ForgotPSScreen'
+import {ReSetPasswordScreen} from './src/page/ForgotPS/ReSetPasswordScreen'
+import {RegisterScreen} from './src/page/Register/RegisterScreen'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -98,6 +102,42 @@ function App (): JSX.Element {
               headerTintColor: '#FFFFFF',
               headerTitleStyle: {},
               headerTitleAlign: 'center',
+            }}
+          />
+          <Stack.Screen
+            name='LoginScreen'
+            component={LoginScreen}
+            options={{
+              headerTransparent: true,
+              headerTitle: '',
+              headerTintColor: 'white',
+            }}
+          />
+          <Stack.Screen
+            name='RegisterScreen'
+            component={RegisterScreen}
+            options={{
+              headerTransparent: true,
+              headerTitle: '',
+              headerTintColor: 'white',
+            }}
+          />
+          <Stack.Screen
+            name='ForgotPSScreen'
+            component={ForgotPSScreen}
+            options={{
+              headerTransparent: true,
+              headerTitle: '',
+              headerTintColor: 'white',
+            }}
+          />
+          <Stack.Screen
+            name='ReSetPasswordScreen'
+            component={ReSetPasswordScreen}
+            options={{
+              headerTransparent: true,
+              headerTitle: '',
+              headerTintColor: 'white',
             }}
           />
         </Stack.Navigator>

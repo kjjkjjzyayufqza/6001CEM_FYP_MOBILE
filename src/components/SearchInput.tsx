@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import {Basestyles} from '../../Styles/Styles'
 import {Formik} from 'formik'
 import {createNavigationContainerRef} from '@react-navigation/native'
-import {navigate} from './RootNavigation'
+import { navigateTo } from './RootNavigation'
 
 interface SearchInputModel {
   bgColor?: string
@@ -23,7 +23,7 @@ export const SearchInput: React.FC<SearchInputModel> = ({bgColor, brColor}) => {
       initialValues={{searchValue: ''}}
       onSubmit={values => {
         console.log(values)
-        navigate('SearchList', {userName: 'aa'})
+        navigateTo('SearchList', {userName: 'aa'})
       }}>
       {({handleChange, handleBlur, handleSubmit, values}) => (
         <HStack space={4}>

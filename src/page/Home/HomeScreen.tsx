@@ -19,6 +19,7 @@ import React from 'react'
 import SearchInput from '../../components/SearchInput'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {TouchableOpacity} from 'react-native'
+import {UserNameBar} from '../../components/UserNameBar'
 
 export const HomeScreen = () => {
   return (
@@ -27,26 +28,7 @@ export const HomeScreen = () => {
         style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
         bg={'white'}>
         <VStack flex={1} alignItems='center'>
-          <HStack px={5} pt={2}>
-            <Text color={'#A5A4A4'} fontSize={25} fontWeight={500}>
-              Hello,
-            </Text>
-            <Spacer />
-          </HStack>
-          <HStack px={5}>
-            <Text fontSize={30} fontWeight={600}>
-              Radovan
-            </Text>
-            <Spacer />
-            <Avatar
-              bg='green.500'
-              source={{
-                uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80',
-              }}
-              size={'md'}>
-              AJ
-            </Avatar>
-          </HStack>
+          <UserNameBar />
           <Box alignItems='center' p={5} flex={1} zIndex={3}>
             <SearchInput />
           </Box>
