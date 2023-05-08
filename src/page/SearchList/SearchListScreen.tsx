@@ -6,6 +6,7 @@ import {
   Button,
   Center,
   CheckIcon,
+  FlatList,
   HStack,
   Image,
   Pressable,
@@ -29,6 +30,11 @@ import BottomSheet, {
   BottomSheetModalProvider,
 } from '@gorhom/bottom-sheet'
 import {GestureHandlerRootView} from 'react-native-gesture-handler'
+import {
+  MOCK_DATA_DOCTOR,
+  MOCK_DATA_DOCTOR_MODEL,
+  MOCK_DATA_DOCTOR_ONE,
+} from '../../MOCK'
 
 export const SearchListScreen = () => {
   // ref
@@ -106,105 +112,120 @@ export const SearchListScreen = () => {
             Show results : 99
           </Text>
         </Box>
-        <Box p={3}>
-          <Pressable onPress={() => console.log("I'm Pressed")}>
-            <Box
-              rounded='lg'
-              borderColor='coolGray.200'
-              _light={{
-                backgroundColor: 'white',
-              }}
-              h={170}
-              style={Basestyles.baseShadow}>
-              <VStack p={3} h={'100%'}>
-                <HStack>
-                  <Box>
-                    <AspectRatio
-                      w={'120px'}
-                      ratio={4 / 4}
-                      overflow={'hidden'}
-                      borderWidth={1}
-                      borderColor={'coolGray.200'}
-                      rounded={8}>
-                      <Image
-                        h={'150px'}
-                        resizeMode={'cover'}
-                        source={{
-                          uri: 'https://thumbs.dreamstime.com/b/senior-doctor-holding-papers-smiling-23096004.jpg',
-                        }}
-                        alt='image'
-                      />
-                    </AspectRatio>
-                  </Box>
-                  <Box bg='white' w={'70%'} px={5}>
-                    <Text
-                      color='coolGray.800'
-                      fontWeight='medium'
-                      fontSize='xl'>
-                      Dr. Johnson
-                    </Text>
-                    <HStack mt='2'>
-                      <MaterialCommunityIcons
-                        name='badge-account-horizontal-outline'
-                        size={20}
-                        color='#828282'
-                        style={{paddingRight: 10}}
-                      />
-                      <Badge
-                        variant={'solid'}
-                        bg={'amber.500'}
-                        alignSelf='center'
-                        p={0}
-                        rounded={5}>
-                        <Text fontSize='sm' color='white'>
-                          General practitioner
-                        </Text>
-                      </Badge>
-                    </HStack>
-                    <HStack mt='2'>
-                      <MaterialCommunityIcons
-                        name='location-exit'
-                        size={20}
-                        color='#828282'
-                        style={{paddingRight: 10}}
-                      />
-                      <Text fontSize='sm' color='coolGray.700'>
-                        Kowloon Bay
-                      </Text>
-                    </HStack>
-                    <HStack mt='2'>
-                      <MaterialCommunityIcons
-                        name='clock-time-five-outline'
-                        size={20}
-                        color='#828282'
-                        style={{paddingRight: 10}}
-                      />
-                      <Text fontSize='sm' color='coolGray.700'>
-                        11:00 AM - 18:00 PM
-                      </Text>
-                    </HStack>
-                  </Box>
-                </HStack>
-                <Box w={'300px'} mt={2} h={100}>
-                  <HStack>
-                    <MaterialIcons
-                      name={'location-on'}
-                      size={15}
-                      style={{marginTop: 3}}
-                    />
-                    <Text fontSize='sm' color='gray.400'>
-                      Distance from you : 423.2 M
-                    </Text>
-                  </HStack>
-                </Box>
-              </VStack>
-            </Box>
-          </Pressable>
-        </Box>
+        <FlatList
+          data={MOCK_DATA_DOCTOR_ONE}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({item, index}) => {
+            return <RenderItemDoctorList item={item} />
+          }}></FlatList>
         <SortBottomSheet _bottomSheetModalRef={bottomSheetModalRef_sort} />
         <FilterBottomSheet _bottomSheetModalRef={bottomSheetModalRef_filter} />
       </GestureHandlerRootView>
     </VStack>
+  )
+}
+
+const RenderItemDoctorList: FC<{item: MOCK_DATA_DOCTOR_MODEL}> = ({item}) => {
+  return (
+    <Box p={3}>
+      <Pressable onPress={() => console.log("I'm Pressed")}>
+        <Box
+          rounded='lg'
+          borderColor='coolGray.200'
+          _light={{
+            backgroundColor: 'white',
+          }}
+          h={290}
+          style={Basestyles.baseShadow}>
+          <VStack p={3} h={'100%'}>
+            <Center>
+              <Box>
+                <AspectRatio
+                  w={'120px'}
+                  ratio={4 / 4}
+                  overflow={'hidden'}
+                  borderWidth={1}
+                  borderColor={'coolGray.200'}
+                  rounded={8}>
+                  <Image
+                    h={'150px'}
+                    resizeMode={'cover'}
+                    source={{
+                      uri: 'https://thumbs.dreamstime.com/b/senior-doctor-holding-papers-smiling-23096004.jpg',
+                    }}
+                    alt='image'
+                  />
+                </AspectRatio>
+              </Box>
+            </Center>
+            <HStack justifyContent={'center'} alignItems={'center'}>
+              <Box
+                bg='white'
+                w={'70%'}
+                px={5}
+                justifyContent={'center'}
+                alignItems={'center'}>
+                <Text color='coolGray.800' fontWeight='medium' fontSize='xl'>
+                  {item.name}
+                </Text>
+                <HStack mt='2'>
+                  <MaterialCommunityIcons
+                    name='badge-account-horizontal-outline'
+                    size={20}
+                    color='#828282'
+                    style={{paddingRight: 10}}
+                  />
+                  <Badge
+                    variant={'solid'}
+                    bg={'amber.500'}
+                    alignSelf='center'
+                    p={0}
+                    rounded={5}>
+                    <Text fontSize='sm' color='white'>
+                      {item.category}
+                    </Text>
+                  </Badge>
+                </HStack>
+                <HStack mt='2'>
+                  <MaterialCommunityIcons
+                    name='location-exit'
+                    size={20}
+                    color='#828282'
+                    style={{paddingRight: 10}}
+                  />
+                  <Text fontSize='sm' color='coolGray.700'>
+                    {item.location}
+                  </Text>
+                </HStack>
+                <HStack mt='2'>
+                  <MaterialCommunityIcons
+                    name='clock-time-five-outline'
+                    size={20}
+                    color='#828282'
+                    style={{paddingRight: 10}}
+                  />
+                  <Text fontSize='sm' color='coolGray.700'>
+                    {item.openingHours}
+                  </Text>
+                </HStack>
+              </Box>
+            </HStack>
+            <Box w={'300px'} mt={2} h={100}>
+              <HStack>
+                <MaterialIcons
+                  name={'location-on'}
+                  size={15}
+                  style={{marginTop: 3}}
+                />
+                <Text fontSize='sm' color='gray.400'>
+                  Distance from you : 423.2 M
+                </Text>
+              </HStack>
+            </Box>
+          </VStack>
+        </Box>
+      </Pressable>
+    </Box>
   )
 }
 

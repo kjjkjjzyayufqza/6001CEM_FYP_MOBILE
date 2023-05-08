@@ -72,7 +72,7 @@ export const ChatMessageInput: React.FC<ChatMessageInputModel> = ({
       <View
         bg={'#33A6B8'}
         borderRadius={30}
-        w={'10%'}
+        w={'40px'}
         h='40px'
         ml={2}
         justifyContent={'center'}>

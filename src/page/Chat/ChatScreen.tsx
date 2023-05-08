@@ -1,4 +1,4 @@
-import {HStack, Image, Input, ScrollView, Text, View} from 'native-base'
+import {Button, HStack, Image, Input, ScrollView, Text, View} from 'native-base'
 import React, {useCallback, useEffect, useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import {
@@ -14,6 +14,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 import ChatMessageInput from '../../components/ChatMessageInput'
 import {postBotMessage} from '../../API'
 import {BotMessageBox, makeid} from '../../components/BotMessageBox'
+import {QuickReplies} from 'react-native-gifted-chat/lib/QuickReplies'
 
 export const ChatScreen = () => {
   const [messages, setMessages] = useState<IMessage[]>([])
@@ -27,15 +28,26 @@ export const ChatScreen = () => {
         _id: 1,
         text: (
           <View>
-            <Text>
-              Hello, What can i help you?
-            </Text>
+            <Text>Hello, What can i help you?</Text>
           </View>
         ) as any,
         createdAt: new Date(),
         user: {
           _id: 0,
           name: 'Bot',
+        },
+        quickReplies: {
+          type: 'radio', // or 'checkbox',
+          values: [
+            {
+              title: 'My skin is itchy, can you help me?',
+              value: 'My skin is itchy, can you help me?',
+            },
+            {
+              title: 'My stomach feels uncomfortable.',
+              value: 'My stomach feels uncomfortable.',
+            },
+          ],
         },
       },
     ])
@@ -118,7 +130,15 @@ export const ChatScreen = () => {
   return (
     <View style={{flex: 1}}>
       <GiftedChat
-        onQuickReply={() => {}}
+        onQuickReply={quickReply => {
+          const value = {
+            _id: makeid(20),
+            createdAt: new Date(),
+            text: quickReply[0].value,
+            user: {_id: 1, name: 'TEST1'},
+          }
+          onSend([value])
+        }}
         messages={messages}
         renderUsernameOnMessage={true}
         renderAvatar={() => (
@@ -129,6 +149,7 @@ export const ChatScreen = () => {
             source={require('../../../public/img/botIcon.png')}></Image>
         )}
         onSend={messages => {
+          console.log(messages)
           onSend(messages)
         }}
         user={{

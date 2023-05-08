@@ -42,6 +42,21 @@ export const HomeScreen = () => {
                   alt='image'
                 />
               </AspectRatio>
+              <AspectRatio
+                w='30%'
+                h='30%'
+                ratio={4 / 3}
+                position={'absolute'}
+                top={10}
+                left={'76px'}>
+                <Image
+                  source={require('../../../public/img/botIcon.png')}
+                  w={'100%'}
+                  h={'100%'}
+                  alt='image'
+                  rounded={500}
+                />
+              </AspectRatio>
             </Center>
             <Box
               rounded='lg'
@@ -68,6 +83,7 @@ export const HomeScreen = () => {
                     alt='image'
                   />
                 </AspectRatio>
+
                 <Center
                   _text={{
                     color: 'black',
@@ -239,10 +255,7 @@ export const HomeScreen = () => {
                     alt='Picture of a Flower'
                   />
                 </AspectRatio>
-                <Text w={'70%'}>
-                  We have added a new number of physicians to our general
-                  clinic.
-                </Text>
+                <Text w={'70%'}>The chat model has been updated</Text>
               </HStack>
             </Box>
           </VStack>
