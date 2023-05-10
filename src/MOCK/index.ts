@@ -5,18 +5,20 @@ export interface MOCK_DATA_DOCTOR_MODEL {
   openingHours: string;
   about: string;
   image: string;
+  locationPoint: {latitude: number; longitude: number};
 }
 
 export const MOCK_DATA_DOCTOR_ONE: MOCK_DATA_DOCTOR_MODEL[] = [
-    {
-      name: 'Dr. Lee',
-      category: 'General Practitioner',
-      location: 'Kowloon Bay',
-      openingHours: '11:0 AM - 18:00 PM',
-      about: 'Good Doctor',
-      image: '',
-    },
-]
+  {
+    name: 'Dr. Lee',
+    category: 'General Practitioner',
+    location: 'Kowloon Bay',
+    openingHours: '11:0 AM - 18:00 PM',
+    about: 'Good Doctor',
+    image: '',
+    locationPoint: {latitude: 22.276958, longitude: 114.170708},
+  },
+];
 
 export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
   {
@@ -26,6 +28,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '11:0 AM - 18:00 PM',
     about: 'Good Doctor',
     image: '',
+    locationPoint: {latitude: 22.280004, longitude: 114.171677},
   },
   {
     name: 'Dr. Chan',
@@ -34,6 +37,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:00 PM',
     about: 'Experienced Surgeon',
     image: '',
+    locationPoint: {latitude: 22.278405, longitude: 114.181967},
   },
   {
     name: 'Dr. Wong',
@@ -42,6 +46,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '12:00 PM - 20:00 PM',
     about: 'Skincare Specialist',
     image: '',
+    locationPoint: {latitude: 22.291563, longitude: 114.174455},
   },
   {
     name: 'Dr. Ho',
@@ -50,6 +55,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '8:00 AM - 16:00 PM',
     about: 'Bone and Joint Expert',
     image: '',
+    locationPoint: {latitude: 22.295498, longitude: 114.174995},
   },
   {
     name: 'Dr. Au',
@@ -58,6 +64,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:00 AM - 18:00 PM',
     about: 'Eye Doctor',
     image: '',
+    locationPoint: {latitude: 22.304083, longitude: 114.167633},
   },
   {
     name: 'Dr. Yip',
@@ -66,6 +73,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:00 PM',
     about: 'Medical Specialist',
     image: '',
+    locationPoint: {latitude: 22.335364, longitude: 114.15583},
   },
   {
     name: 'Dr. Siu',
@@ -74,6 +82,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '12:00 PM - 20:00 PM',
     about: 'Ear, Nose, and Throat Doctor',
     image: '',
+    locationPoint: {latitude: 22.336397, longitude: 114.167448},
   },
   {
     name: 'Dr. Cheung',
@@ -82,6 +91,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:00 AM - 18:00 PM',
     about: 'Mental Health Professional',
     image: '',
+    locationPoint: {latitude: 22.337719, longitude: 114.219997},
   },
   {
     name: 'Dr. Lam',
@@ -90,6 +100,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '11:0 AM - 18:00 PM',
     about: 'Family Doctor',
     image: '',
+    locationPoint: {latitude: 22.338751, longitude: 114.141329},
   },
   {
     name: 'Dr. Ng',
@@ -98,6 +109,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '12:00 PM - 20:00 PM',
     about: 'Skin Care Specialist',
     image: '',
+    locationPoint: {
+      latitude: 22.388466,
+      longitude: 113.973503,
+    },
   },
   {
     name: 'Dr. Lee',
@@ -106,6 +121,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '11:00 AM - 18:00 PM',
     about: 'Compassionate Family Doctor',
     image: '',
+    locationPoint: {
+      latitude: 22.322416,
+      longitude: 114.200954,
+    },
   },
   {
     name: 'Dr. Wong',
@@ -114,6 +133,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:00 PM',
     about: 'Experienced Skin Care Expert',
     image: '',
+    locationPoint: {
+      latitude: 22.319303,
+      longitude: 114.168932,
+    },
   },
   {
     name: 'Dr. Chan',
@@ -122,6 +145,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:00 AM - 17:00 PM',
     about: 'Ear, Nose & Throat Specialist',
     image: '',
+    locationPoint: {
+      latitude: 22.280214,
+      longitude: 114.185806,
+    },
   },
   {
     name: 'Dr. Lam',
@@ -130,6 +157,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:00 PM',
     about: 'Experienced Family Physician',
     image: '',
+    locationPoint: {
+      latitude: 22.281191,
+      longitude: 114.157437,
+    },
   },
   {
     name: 'Dr. Ng',
@@ -138,6 +169,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '12:00 PM - 20:00 PM',
     about: 'Licensed Mental Health Professional',
     image: '',
+    locationPoint: {
+      latitude: 22.286165,
+      longitude: 114.213947,
+    },
   },
   {
     name: 'Dr. Ho',
@@ -146,6 +181,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 18:00 PM',
     about: 'Leading Bone & Joint Surgeon',
     image: '',
+    locationPoint: {
+      latitude: 22.297174,
+      longitude: 114.171134,
+    },
   },
   {
     name: 'Dr. Siu',
@@ -154,6 +193,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:00 AM - 18:00 PM',
     about: 'Skin Health Specialist',
     image: '',
+    locationPoint: {
+      latitude: 22.341881,
+      longitude: 114.193872,
+    },
   },
   {
     name: 'Dr. Cheung',
@@ -162,6 +205,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '11:00 AM - 19:00 PM',
     about: 'Vision Care Professional',
     image: '',
+    locationPoint: {
+      latitude: 22.291448,
+      longitude: 114.200095,
+    },
   },
   {
     name: 'Dr. Yip',
@@ -170,6 +217,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:30 PM',
     about: 'Highly Qualified Medical Practitioner',
     image: '',
+    locationPoint: {
+      latitude: 22.282422,
+      longitude: 114.126826,
+    },
   },
   {
     name: 'Dr. Au',
@@ -178,6 +229,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:30 AM - 17:30 PM',
     about: 'Expert Surgical Specialist',
     image: '',
+    locationPoint: {
+      latitude: 22.383053,
+      longitude: 114.27056,
+    },
   },
   {
     name: 'Dr. Johnson',
@@ -186,6 +241,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:00 AM - 17:00 PM',
     about: 'Family Doctor for All Ages',
     image: '',
+    locationPoint: {
+      latitude: 22.314004,
+      longitude: 114.222696,
+    },
   },
   {
     name: 'Dr. Parker',
@@ -194,6 +253,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '11:00 AM - 18:00 PM',
     about: 'Experienced Skin Specialist',
     image: '',
+    locationPoint: {
+      latitude: 22.44445,
+      longitude: 114.022358,
+    },
   },
   {
     name: 'Dr. Williams',
@@ -202,6 +265,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:00 PM',
     about: 'Mental Health and Wellness Expert',
     image: '',
+    locationPoint: {
+      latitude: 22.279841,
+      longitude: 114.158217,
+    },
   },
   {
     name: 'Dr. White',
@@ -210,6 +277,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '12:00 PM - 20:00 PM',
     about: 'Expert in Ear, Nose, and Throat Disorders',
     image: '',
+    locationPoint: {
+      latitude: 22.297495,
+      longitude: 114.17494,
+    },
   },
   {
     name: 'Dr. Smith',
@@ -218,6 +289,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 18:00 PM',
     about: 'Specializes in Joint Care and Reconstruction',
     image: '',
+    locationPoint: {
+      latitude: 22.318198,
+      longitude: 114.169844,
+    },
   },
   {
     name: 'Dr. Anderson',
@@ -226,6 +301,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:00 AM - 18:00 PM',
     about: 'Cares for Your Eyes and Vision',
     image: '',
+    locationPoint: {
+      latitude: 22.28023,
+      longitude: 114.182866,
+    },
   },
   {
     name: 'Dr. Brown',
@@ -234,6 +313,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:00 PM',
     about: 'Expert Surgery Care Provider',
     image: '',
+    locationPoint: {
+      latitude: 22.291301,
+      longitude: 114.209405,
+    },
   },
   {
     name: 'Dr. Davis',
@@ -242,6 +325,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '10:00 AM - 18:00 PM',
     about: 'Skilled in Internal Medicine',
     image: '',
+    locationPoint: {
+      latitude: 22.282067,
+      longitude: 114.128263,
+    },
   },
   {
     name: 'Dr. Johnson',
@@ -250,6 +337,10 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '9:00 AM - 17:00 PM',
     about: 'Expert in Anxiety and Stress Management',
     image: '',
+    locationPoint: {
+      latitude: 22.284857,
+      longitude: 114.157867,
+    },
   },
   {
     name: 'Dr. Wilson',
@@ -258,5 +349,9 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     openingHours: '11:00 AM - 19:00 PM',
     about: 'Experience in Treating Skin Conditions',
     image: '',
+    locationPoint: {
+      latitude: 22.325046,
+      longitude: 114.213368,
+    },
   },
 ];

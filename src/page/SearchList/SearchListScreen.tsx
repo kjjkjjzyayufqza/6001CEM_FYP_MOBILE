@@ -17,7 +17,14 @@ import {
   View,
   useDisclose,
 } from 'native-base'
-import React, {useMemo, useRef, useCallback, FC, useState} from 'react'
+import React, {
+  useMemo,
+  useRef,
+  useCallback,
+  FC,
+  useState,
+  useEffect,
+} from 'react'
 import SearchInput from '../../components/SearchInput'
 import {TouchableOpacity} from 'react-native'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -35,6 +42,13 @@ import {
   MOCK_DATA_DOCTOR_MODEL,
   MOCK_DATA_DOCTOR_ONE,
 } from '../../MOCK'
+import Location from '@react-native-community/geolocation'
+import * as geolib from 'geolib'
+
+interface LocationModel {
+  latitude: number
+  longitude: number
+}
 
 export const SearchListScreen = () => {
   // ref
@@ -48,6 +62,36 @@ export const SearchListScreen = () => {
 
   const handlePresentModalPress_filter = useCallback(() => {
     bottomSheetModalRef_filter.current?.present()
+  }, [])
+
+  const [currentLocation, setCurrentLocation] = useState<LocationModel>({
+    latitude: 0,
+    longitude: 0,
+  })
+
+  useEffect(() => {
+    Location.getCurrentPosition(
+      position => {
+        console.log(position.coords)
+        // const a = {latitude: 22.300394, longitude: 114.23495}
+        // let b: any = {}
+        // b = {
+        //   latitude: position.coords.latitude,
+        //   longitude: position.coords.longitude,
+        // }
+        setCurrentLocation({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        })
+        // const c = geolib.getPreciseDistance(a, b)
+        // console.log('Miles:', c * 0.000621)
+        // console.log('Meters:', c * 0.000621 * 1609.344)
+      },
+      error => {
+        console.log('Unable to get your location!')
+      },
+      {enableHighAccuracy: true, maximumAge: 1000},
+    )
   }, [])
 
   return (
@@ -113,10 +157,15 @@ export const SearchListScreen = () => {
           </Text>
         </Box>
         <FlatList
-          data={MOCK_DATA_DOCTOR_ONE}
+          data={MOCK_DATA_DOCTOR}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index}) => {
-            return <RenderItemDoctorList item={item} />
+            return (
+              <RenderItemDoctorList
+                item={item}
+                _CurrentLocation={currentLocation}
+              />
+            )
           }}></FlatList>
         <SortBottomSheet _bottomSheetModalRef={bottomSheetModalRef_sort} />
         <FilterBottomSheet _bottomSheetModalRef={bottomSheetModalRef_filter} />
@@ -125,7 +174,16 @@ export const SearchListScreen = () => {
   )
 }
 
-const RenderItemDoctorList: FC<{item: MOCK_DATA_DOCTOR_MODEL}> = ({item}) => {
+const RenderItemDoctorList: FC<{
+  item: MOCK_DATA_DOCTOR_MODEL
+  _CurrentLocation: LocationModel
+}> = ({item, _CurrentLocation}) => {
+  const Distance = geolib.getPreciseDistance(
+    _CurrentLocation,
+    item.locationPoint,
+  )
+  const Meters = Distance * 0.000621 * 1609.344
+
   return (
     <Box p={3}>
       <Pressable onPress={() => console.log("I'm Pressed")}>
@@ -218,7 +276,7 @@ const RenderItemDoctorList: FC<{item: MOCK_DATA_DOCTOR_MODEL}> = ({item}) => {
                   style={{marginTop: 3}}
                 />
                 <Text fontSize='sm' color='gray.400'>
-                  Distance from you : 423.2 M
+                  Distance from you : {Meters.toFixed(2)} M
                 </Text>
               </HStack>
             </Box>
@@ -240,6 +298,9 @@ const SortBottomSheet: FC<SortBottomSheetModal> = ({_bottomSheetModalRef}) => {
   const handleSheetChanges = useCallback((index: number) => {
     console.log('handleSheetChanges', index)
   }, [])
+
+  useEffect(() => {}, [])
+
   return (
     <BottomSheetModalProvider>
       <View>

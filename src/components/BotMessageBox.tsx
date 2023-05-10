@@ -32,7 +32,7 @@ import {
   Send,
 } from 'react-native-gifted-chat'
 import AntDesign from 'react-native-vector-icons/AntDesign'
-import { navigateTo } from './RootNavigation'
+import {navigateTo} from './RootNavigation'
 
 interface BotMessageBoxModel {
   sendMessage: string
@@ -217,9 +217,10 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
           In the meantime, I recommend the following of doctors to you
         </Text>
         <Box>
-          <Pressable onPress={() => {
-            navigateTo('SearchList',{})
-          }}>
+          <Pressable
+            onPress={() => {
+              navigateTo('SearchList', {})
+            }}>
             {({isHovered, isFocused, isPressed}) => {
               return (
                 <Box
@@ -238,7 +239,7 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
                     ],
                   }}
                   p={2}
-                  h={24}
+                  h={'140px'}
                   borderRadius={5}
                   shadow={1}>
                   <HStack>
@@ -253,27 +254,48 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
                       alt='image'
                     />
                     <VStack flex={1} px={1}>
-                      <Text fontSize='13px' color='#9E9E9E'>
-                        Category
-                      </Text>
-                      <View h={'40px'} overflow={'hidden'}>
+                      <View h={'20px'} overflow={'hidden'}>
                         <Text
-                          color='coolGray.800'
+                          color='#0080EA'
                           fontWeight='600'
                           fontSize='18px'
                           lineHeight={'19px'}>
-                          {SwitchDoctorCate(Type ?? '')}
+                          Dr. Johnson
                         </Text>
                       </View>
-
+                      <Text fontSize='13px' color='#9E9E9E' mb={-1} mt={2}>
+                        Category
+                      </Text>
                       <Text
+                        fontSize='16px'
+                        color='#373737'
+                        h={'20px'}
+                        overflow={'hidden'}>
+                        {SwitchDoctorCate(Type ?? '')}
+                      </Text>
+
+                      {/* <Text
                         fontSize='sm'
                         color='#0080EA'
                         style={{textAlign: 'right'}}>
                         Read More...
-                      </Text>
+                      </Text> */}
                     </VStack>
                   </HStack>
+                  <Text
+                    fontSize='sm'
+                    color='black'
+                    style={{textAlign: 'left'}}
+                    top={6}>
+                    Recommends the doctor closest to you.
+                  </Text>
+                  <Text
+                    fontSize='sm'
+                    color='gray.400'
+                    style={{textAlign: 'left'}}
+                    top={6}>
+                    Distance from you 100 M
+                  </Text>
                 </Box>
               )
             }}
@@ -328,6 +350,17 @@ function SwitchDoctorCate (type: string): string {
     'internal pain',
     'open wound',
     'body feels weak',
+  ]
+
+  const allDoctorCta = [
+    'General Surgeon',
+    'General Practitioner',
+    'Dermatologists',
+    'Orthopedic Surgeon',
+    'Ophthalmologist',
+    'Internal Medicine Physician',
+    'Otolaryngologist',
+    'Psychologist',
   ]
 
   switch (type) {
