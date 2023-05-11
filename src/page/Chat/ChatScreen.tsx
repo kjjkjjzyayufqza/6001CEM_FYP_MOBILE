@@ -1,4 +1,13 @@
-import {Button, HStack, Image, Input, ScrollView, Text, View} from 'native-base'
+import {
+  Button,
+  HStack,
+  Image,
+  Input,
+  ScrollView,
+  Text,
+  View,
+  useToast,
+} from 'native-base'
 import React, {useCallback, useEffect, useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import {
@@ -15,15 +24,16 @@ import ChatMessageInput from '../../components/ChatMessageInput'
 import {postBotMessage} from '../../API'
 import {BotMessageBox, makeid} from '../../components/BotMessageBox'
 import {QuickReplies} from 'react-native-gifted-chat/lib/QuickReplies'
+import PubSub from 'pubsub-js'
 
 export const ChatScreen = () => {
   const [messages, setMessages] = useState<IMessage[]>([])
   // const [customInputMessage, setCustomInputMessage] = useState<string>('')
 
   const [needClearValue, setNeedClearValue] = useState<boolean>(false)
-
+  const toast = useToast()
   useEffect(() => {
-    setMessages([
+    const defMessage: IMessage[] = [
       {
         _id: 1,
         text: (
@@ -50,9 +60,25 @@ export const ChatScreen = () => {
           ],
         },
       },
-    ])
+    ]
+
+    setMessages(defMessage)
+
+    var ClearAllMessage = (msg: any, data: any) => {
+      setMessages(defMessage)
+      toast.show({
+        description: 'Dialogue has been reset',
+      })
+    }
+
+    // add the function to the list of subscribers for a particular topic
+    // we're keeping the returned token, in order to be able to unsubscribe
+    // from the topic later on
+    var token = PubSub.subscribe('ClearAllMessage', ClearAllMessage)
+
     return () => {
       setMessages([])
+      PubSub.unsubscribe(token)
     }
   }, [])
 
@@ -149,7 +175,7 @@ export const ChatScreen = () => {
             source={require('../../../public/img/botIcon.png')}></Image>
         )}
         onSend={messages => {
-          console.log(messages)
+          // console.log(messages)
           onSend(messages)
         }}
         user={{

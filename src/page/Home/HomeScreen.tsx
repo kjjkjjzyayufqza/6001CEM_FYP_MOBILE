@@ -15,13 +15,18 @@ import {
   VStack,
   View,
 } from 'native-base'
-import React from 'react'
+import React, {useEffect} from 'react'
 import SearchInput from '../../components/SearchInput'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {TouchableOpacity} from 'react-native'
 import {UserNameBar} from '../../components/UserNameBar'
+import {getDistanceResult} from '../../MOCK/LocationPoint'
 
 export const HomeScreen = () => {
+  useEffect(() => {
+    const a = getDistanceResult
+  }, [])
+
   return (
     <ScrollView>
       <View

@@ -44,11 +44,7 @@ import {
 } from '../../MOCK'
 import Location from '@react-native-community/geolocation'
 import * as geolib from 'geolib'
-
-interface LocationModel {
-  latitude: number
-  longitude: number
-}
+import { LocationModel } from '../../MOCK/LocationPoint'
 
 export const SearchListScreen = () => {
   // ref
@@ -157,6 +153,7 @@ export const SearchListScreen = () => {
           </Text>
         </Box>
         <FlatList
+          // initialNumToRender={3}
           data={MOCK_DATA_DOCTOR}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index}) => {

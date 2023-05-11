@@ -10,7 +10,7 @@ import React from 'react'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
 import {NavigationContainer} from '@react-navigation/native'
 import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import {NativeBaseProvider} from 'native-base'
+import {Button, NativeBaseProvider} from 'native-base'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import Entypo from 'react-native-vector-icons/Entypo'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
@@ -59,6 +59,13 @@ function MainTabView () {
           headerTitleAlign: 'center',
           tabBarIcon: ({color, size}) => (
             <Entypo name='chat' color={color} size={size} />
+          ),
+          headerRight: () => (
+            <Button onPress={() => {
+              PubSub.publish('ClearAllMessage', 'null');
+            }} color='#ffffff' variant={'ghost'}>
+              <MaterialCommunityIcons name='chat-remove-outline' size={20} color={'white'} />
+            </Button>
           ),
         }}
       />

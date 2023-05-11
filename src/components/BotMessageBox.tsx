@@ -33,7 +33,9 @@ import {
 } from 'react-native-gifted-chat'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import {navigateTo} from './RootNavigation'
-
+import {getDistanceResult, getMeters} from '../MOCK/LocationPoint'
+import {MOCK_DATA_DOCTOR} from '../MOCK'
+import * as geolib from 'geolib'
 interface BotMessageBoxModel {
   sendMessage: string
 }
@@ -216,91 +218,7 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
         <Text>
           In the meantime, I recommend the following of doctors to you
         </Text>
-        <Box>
-          <Pressable
-            onPress={() => {
-              navigateTo('SearchList', {})
-            }}>
-            {({isHovered, isFocused, isPressed}) => {
-              return (
-                <Box
-                  bg={
-                    isPressed
-                      ? 'coolGray.200'
-                      : isHovered
-                      ? 'coolGray.200'
-                      : 'coolGray.100'
-                  }
-                  style={{
-                    transform: [
-                      {
-                        scale: isPressed ? 0.96 : 1,
-                      },
-                    ],
-                  }}
-                  p={2}
-                  h={'140px'}
-                  borderRadius={5}
-                  shadow={1}>
-                  <HStack>
-                    <Image
-                      style={{
-                        width: 100,
-                        height: 65,
-                        resizeMode: 'cover',
-                        borderRadius: 5,
-                      }}
-                      source={require('../../public/img/doctorList.png')}
-                      alt='image'
-                    />
-                    <VStack flex={1} px={1}>
-                      <View h={'20px'} overflow={'hidden'}>
-                        <Text
-                          color='#0080EA'
-                          fontWeight='600'
-                          fontSize='18px'
-                          lineHeight={'19px'}>
-                          Dr. Johnson
-                        </Text>
-                      </View>
-                      <Text fontSize='13px' color='#9E9E9E' mb={-1} mt={2}>
-                        Category
-                      </Text>
-                      <Text
-                        fontSize='16px'
-                        color='#373737'
-                        h={'20px'}
-                        overflow={'hidden'}>
-                        {SwitchDoctorCate(Type ?? '')}
-                      </Text>
-
-                      {/* <Text
-                        fontSize='sm'
-                        color='#0080EA'
-                        style={{textAlign: 'right'}}>
-                        Read More...
-                      </Text> */}
-                    </VStack>
-                  </HStack>
-                  <Text
-                    fontSize='sm'
-                    color='black'
-                    style={{textAlign: 'left'}}
-                    top={6}>
-                    Recommends the doctor closest to you.
-                  </Text>
-                  <Text
-                    fontSize='sm'
-                    color='gray.400'
-                    style={{textAlign: 'left'}}
-                    top={6}>
-                    Distance from you 100 M
-                  </Text>
-                </Box>
-              )
-            }}
-          </Pressable>
-        </Box>
+        <GetClosestDoctor Type={Type} />
       </VStack>
       <AlertDialog
         leastDestructiveRef={cancelRef}
@@ -320,6 +238,113 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
         </AlertDialog.Content>
       </AlertDialog>
     </View>
+  )
+}
+
+const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
+  const DoctorData = MOCK_DATA_DOCTOR
+
+  let locationPointData: any[] = []
+  DoctorData.map(e => {
+    if (e.category == SwitchDoctorCate(Type)) {
+      locationPointData.push(
+        geolib.getPreciseDistance(getDistanceResult, e.locationPoint),
+      )
+    }
+  })
+  // console.log()
+
+  const resultValue = Math.min(...locationPointData) * 0.000621 * 1609.344
+
+  return (
+    <Box>
+      <Pressable
+        onPress={() => {
+          navigateTo('SearchList', {})
+        }}>
+        {({isHovered, isFocused, isPressed}) => {
+          return (
+            <Box
+              bg={
+                isPressed
+                  ? 'coolGray.200'
+                  : isHovered
+                  ? 'coolGray.200'
+                  : 'coolGray.100'
+              }
+              style={{
+                transform: [
+                  {
+                    scale: isPressed ? 0.96 : 1,
+                  },
+                ],
+              }}
+              p={2}
+              h={'140px'}
+              borderRadius={5}
+              shadow={1}>
+              <HStack>
+                <Image
+                  style={{
+                    width: 100,
+                    height: 65,
+                    resizeMode: 'cover',
+                    borderRadius: 5,
+                  }}
+                  source={require('../../public/img/doctorList.png')}
+                  alt='image'
+                />
+                <VStack flex={1} px={1}>
+                  <View h={'20px'} overflow={'hidden'}>
+                    <Text
+                      color='#0080EA'
+                      fontWeight='600'
+                      fontSize='18px'
+                      lineHeight={'19px'}>
+                      Dr. Johnson
+                    </Text>
+                  </View>
+                  <Text fontSize='13px' color='#9E9E9E' mb={-1} mt={2}>
+                    Category
+                  </Text>
+                  <Text
+                    fontSize='16px'
+                    color='#373737'
+                    h={'20px'}
+                    overflow={'hidden'}>
+                    {SwitchDoctorCate(Type ?? '')}
+                  </Text>
+
+                  {/* <Text
+                fontSize='sm'
+                color='#0080EA'
+                style={{textAlign: 'right'}}>
+                Read More...
+              </Text> */}
+                </VStack>
+              </HStack>
+              <Text
+                fontSize='sm'
+                color='black'
+                style={{textAlign: 'left'}}
+                top={6}>
+                Recommends the doctor closest to you.
+              </Text>
+              <Text
+                fontSize='sm'
+                color='gray.400'
+                style={{textAlign: 'left'}}
+                top={6}>
+                Distance from you{' '}
+                {/* {getMeters({latitude: 22, longitude: 114}).toFixed(2)} */}
+                {resultValue.toFixed(2)}
+                 M
+              </Text>
+            </Box>
+          )
+        }}
+      </Pressable>
+    </Box>
   )
 }
 
