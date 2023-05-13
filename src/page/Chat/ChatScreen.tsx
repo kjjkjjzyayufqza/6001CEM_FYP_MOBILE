@@ -57,6 +57,10 @@ export const ChatScreen = () => {
               title: 'My stomach feels uncomfortable.',
               value: 'My stomach feels uncomfortable.',
             },
+            {
+              title: 'I want to upload pictures of my skin to tell what skin problems I have.',
+              value: 'I want to upload pictures of my skin to tell what skin problems I have.'
+            }
           ],
         },
       },
@@ -64,33 +68,55 @@ export const ChatScreen = () => {
 
     setMessages(defMessage)
 
-    var ClearAllMessage = (msg: any, data: any) => {
+    let ClearAllMessage = (msg: any, data: any) => {
       setMessages(defMessage)
       toast.show({
         description: 'Dialogue has been reset',
       })
     }
-
+    let QuickSendMessage = (msg: any, data: any) => {
+      onSend([
+        {
+          _id: makeid(20),
+          createdAt: new Date(),
+          text: data,
+          user: {_id: 1, name: 'TEST1'},
+        },
+      ])
+    }
     // add the function to the list of subscribers for a particular topic
     // we're keeping the returned token, in order to be able to unsubscribe
     // from the topic later on
-    var token = PubSub.subscribe('ClearAllMessage', ClearAllMessage)
-
+    let token = PubSub.subscribe('ClearAllMessage', ClearAllMessage)
+    let quickSend = PubSub.subscribe('QuickSendMessage', QuickSendMessage)
     return () => {
       setMessages([])
       PubSub.unsubscribe(token)
+      PubSub.unsubscribe(quickSend)
     }
   }, [])
 
   const onSend = useCallback((messages: any[] = []) => {
     setNeedClearValue(true)
     const messageString = messages[0]?.text
+    let onlyUpload = false
+    if (
+      messageString ==
+      'I want to upload pictures of my skin to tell what skin problems I have.'
+    ) {
+      onlyUpload = true
+    }
     setMessages(previousMessages => {
       messages = [
         {
           _id: makeid(20),
           createdAt: new Date(),
-          text: <BotMessageBox sendMessage={messageString} />,
+          text: (
+            <BotMessageBox
+              sendMessage={messageString}
+              onlyUpload={onlyUpload}
+            />
+          ),
           user: {_id: 0, name: 'Bot'},
         },
         ...messages,
@@ -166,6 +192,7 @@ export const ChatScreen = () => {
           onSend([value])
         }}
         messages={messages}
+        onLongPress={() => {}}
         renderUsernameOnMessage={true}
         renderAvatar={() => (
           <Image

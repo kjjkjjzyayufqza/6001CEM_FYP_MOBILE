@@ -1,4 +1,5 @@
 import {
+  AddIcon,
   AlertDialog,
   AspectRatio,
   Box,
@@ -18,11 +19,13 @@ import {
   Text,
   VStack,
   View,
+  Image,
+  Progress,
 } from 'native-base'
 import React, {FC, ReactNode, useEffect, useRef, useState} from 'react'
-import {postBotMessage} from '../API'
+import {postBotMessage, postImage} from '../API'
 import {AxiosResponse} from 'axios'
-import {Image, SafeAreaView, TouchableOpacity} from 'react-native'
+import {SafeAreaView, TouchableOpacity} from 'react-native'
 import {windowWidth} from '../Dimensions/Dimensions'
 import {
   Bubble,
@@ -33,11 +36,15 @@ import {
 } from 'react-native-gifted-chat'
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import {navigateTo} from './RootNavigation'
-import {getDistanceResult, getMeters} from '../MOCK/LocationPoint'
+import getUserLocation, {LocationModel} from '../MOCK/LocationPoint'
 import {MOCK_DATA_DOCTOR} from '../MOCK'
 import * as geolib from 'geolib'
+import * as ImagePicker from 'react-native-image-picker'
+import {decode as atob, encode as btoa} from 'base-64'
+import {BotImageResponseModel} from '../MODEL'
 interface BotMessageBoxModel {
   sendMessage: string
+  onlyUpload?: boolean
 }
 
 export function makeid (length: number) {
@@ -53,7 +60,10 @@ export function makeid (length: number) {
   return result
 }
 
-export const BotMessageBox: React.FC<BotMessageBoxModel> = ({sendMessage}) => {
+export const BotMessageBox: React.FC<BotMessageBoxModel> = ({
+  sendMessage,
+  onlyUpload = false,
+}) => {
   const [message, setMessage] = useState<ReactNode>(<></>)
   const [showSuggestions, setShowSuggestions] = useState<ReactNode>(<></>)
   const [returnResult, setReturnResult] = useState<any>({
@@ -74,67 +84,73 @@ export const BotMessageBox: React.FC<BotMessageBoxModel> = ({sendMessage}) => {
   ]
 
   useEffect(() => {
-    if (sendMessage) {
-      // console.log('ready to call')
-      setMessage(
-        <HStack space={2} justifyContent='center'>
-          <Spinner accessibilityLabel='Loading posts' color='indigo.500' />
-          <Text fontSize='md'>Loading</Text>
-        </HStack>,
-      )
-      postBotMessage(sendMessage)
-        .then(res => {
-          // console.log('api done', res.data.botMessage?.message)
+    if (!onlyUpload && onlyUpload == false)
+      if (sendMessage) {
+        // console.log('ready to call')
+        setMessage(
+          <HStack space={2} justifyContent='center'>
+            <Spinner accessibilityLabel='Loading posts' color='indigo.500' />
+            <Text fontSize='md'>Loading</Text>
+          </HStack>,
+        )
+        postBotMessage(sendMessage)
+          .then(res => {
+            // console.log('api done', res.data.botMessage?.message)
 
-          const botMessageTag = res.data.botMessage?.tag ?? ''
-          const botMessage = res.data.botMessage?.message ?? ''
+            const botMessageTag = res.data.botMessage?.tag ?? ''
+            const botMessage = res.data.botMessage?.message ?? ''
 
-          if (!botMessageTag) {
-            //Do not understand
-            botMessage && setMessage(<Text>{botMessage}</Text>)
-          } else {
-            if (ignore_tag.includes(botMessageTag)) {
+            if (!botMessageTag) {
+              //Do not understand
               botMessage && setMessage(<Text>{botMessage}</Text>)
             } else {
-              //Diseases
-              const random: number = Math.floor(
-                Math.random() * selectList.length,
-              )
-              const message = (
-                <Text>
-                  {selectList[random]}
-                  <Text underline fontWeight={700} fontSize={18}>
-                    {botMessage}
+              if (ignore_tag.includes(botMessageTag)) {
+                botMessage && setMessage(<Text>{botMessage}</Text>)
+              } else {
+                //Diseases
+                const random: number = Math.floor(
+                  Math.random() * selectList.length,
+                )
+                const message = (
+                  <Text>
+                    {selectList[random]}
+                    <Text underline fontWeight={700} fontSize={18}>
+                      {botMessage}
+                    </Text>
                   </Text>
-                </Text>
-              )
-              setMessage(message)
-              // console.log(res.data.botMessage)
-              setShowSuggestions(
-                <RecommendationNode
-                  Type={res.data.botMessage?.tag}
-                  SuggestionsText={res.data.botMessage?.suggestionsText}
-                  SuggestionsList={res.data.botMessage?.suggestions}
-                  Introduction={res.data.botMessage?.description}
-                />,
-              )
+                )
+                setMessage(message)
+                // console.log(res.data.botMessage)
+                setShowSuggestions(
+                  <RecommendationNode
+                    Type={res.data.botMessage?.tag}
+                    SuggestionsText={res.data.botMessage?.suggestionsText}
+                    SuggestionsList={res.data.botMessage?.suggestions}
+                    Introduction={res.data.botMessage?.description}
+                  />,
+                )
+              }
             }
-          }
-        })
-        .catch(err => {
-          console.log(err)
-          setMessage(
-            <Text color='#FF3737'>Network Error, Please Try Again</Text>,
-          )
-        })
-    }
+          })
+          .catch(err => {
+            console.log(err)
+            setMessage(
+              <Text color='#FF3737'>Network Error, Please Try Again</Text>,
+            )
+          })
+      }
     return () => {}
   }, [])
 
   return (
     <View>
-      <Text>{message}</Text>
-      {showSuggestions}
+      {!onlyUpload && onlyUpload == false && (
+        <>
+          <Text>{message}</Text>
+          {showSuggestions}
+        </>
+      )}
+      <ImageUploadBox />
     </View>
   )
 }
@@ -244,18 +260,27 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
 const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
   const DoctorData = MOCK_DATA_DOCTOR
 
-  let locationPointData: any[] = []
+  let locationPointData: LocationModel
   DoctorData.map(e => {
     if (e.category == SwitchDoctorCate(Type)) {
-      locationPointData.push(
-        geolib.getPreciseDistance(getDistanceResult, e.locationPoint),
-      )
+      locationPointData = e.locationPoint
     }
   })
   // console.log()
+  const [resultValue, setResultValue] = useState<number>()
+  const [isLoadingDistance, setIsLoadingDistance] = useState<boolean>(true)
 
-  const resultValue = Math.min(...locationPointData) * 0.000621 * 1609.344
-
+  useEffect(() => {
+    // setResultValue(getMeters(locationPointData[0]))
+    getUserLocation()
+      .then(res => {
+        const cal_Distance = geolib.getPreciseDistance(locationPointData, res)
+        setResultValue(cal_Distance * 0.000621 * 1609.344)
+        setIsLoadingDistance(false)
+      })
+      .catch(err => {})
+  }, [])
+  // console.log('resultValue is ', resultValue)
   return (
     <Box>
       <Pressable
@@ -330,21 +355,156 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
                 top={6}>
                 Recommends the doctor closest to you.
               </Text>
-              <Text
-                fontSize='sm'
-                color='gray.400'
-                style={{textAlign: 'left'}}
-                top={6}>
-                Distance from you{' '}
-                {/* {getMeters({latitude: 22, longitude: 114}).toFixed(2)} */}
-                {resultValue.toFixed(2)}
-                 M
-              </Text>
+              {isLoadingDistance ? (
+                <HStack space={2} top={6}>
+                  <Spinner accessibilityLabel='Loading posts' />
+                  <Text color='gray.400' fontSize='sm'>
+                    Loading
+                  </Text>
+                </HStack>
+              ) : (
+                <Text
+                  fontSize='sm'
+                  color='gray.400'
+                  style={{textAlign: 'left'}}
+                  top={6}>
+                  Distance from you {resultValue && resultValue.toFixed(2)}M
+                </Text>
+              )}
             </Box>
           )
         }}
       </Pressable>
     </Box>
+  )
+}
+
+const ImageUploadBox: FC<any> = () => {
+  const [imageUrl, setImageUrl] = useState<ImagePicker.Asset>()
+  const [response, setResponse] = useState<BotImageResponseModel>()
+
+  const chooseImage = () => {
+    var options: ImagePicker.ImageLibraryOptions = {
+      mediaType: 'photo',
+    }
+    ImagePicker.launchImageLibrary(options, response => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker')
+      } else if (response.errorMessage) {
+        console.log('ImagePicker Error: ', response.errorMessage)
+      } else {
+        if (response.assets) {
+          setImageUrl(response.assets[0])
+        }
+      }
+    })
+  }
+
+  useEffect(() => {
+    if (imageUrl) {
+      const fmData = new FormData()
+      // fmData.append('image', imageByte)
+      fmData.append('image', {
+        uri: imageUrl?.uri,
+        type: imageUrl?.type,
+        name: imageUrl?.fileName,
+      })
+      postImage(fmData)
+        .then(res => {
+          // console.log(res)
+          setResponse(res.data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  }, [imageUrl])
+
+  const colorScheme = ['primary', 'secondary', 'emerald', 'warning', 'light']
+
+  return (
+    <VStack>
+      <Divider mt={5} my={2} />
+      <Text fontWeight={700} py={1}>
+        If you can provide relevant skin pictures, we will predict what kind of
+        skin disease it belongs to.
+      </Text>
+
+      <Pressable
+        onPress={() => {
+          chooseImage()
+        }}>
+        {({isHovered, isFocused, isPressed}) => {
+          return (
+            <Box
+              maxW='96'
+              borderWidth='1'
+              borderColor='coolGray.300'
+              bg={
+                isPressed
+                  ? 'coolGray.200'
+                  : isHovered
+                  ? 'coolGray.200'
+                  : 'coolGray.100'
+              }
+              p={imageUrl ? '1' : '5'}
+              rounded='8'
+              style={{
+                transform: [
+                  {
+                    scale: isPressed ? 0.96 : 1,
+                  },
+                ],
+              }}>
+              {imageUrl ? (
+                <Center>
+                  <Image
+                    source={{
+                      uri: imageUrl?.uri,
+                    }}
+                    alt='Alternate Text'
+                    size='xl'
+                    resizeMode={'cover'}
+                  />
+                </Center>
+              ) : (
+                <Center>
+                  <AddIcon style={{width: '30px', height: '30px'}} />
+                </Center>
+              )}
+            </Box>
+          )
+        }}
+      </Pressable>
+      {response && !response.result && (
+        <Text my={3} color='#EB1111'>
+          The image you provided is not a human skin, please reselect it!
+        </Text>
+      )}
+      {response && response.result && (
+        <>
+          <Text my={3} fontWeight={600}>
+            Based on the analysis, the results are as follows:
+          </Text>
+          <Box w='90%' maxW='300'>
+            <VStack mx='4' space='md'>
+              {response.top5Prediction?.map((e, i) => {
+                return (
+                  <Box key={i}>
+                    <Text>{sortName(e[0])}</Text>
+                    <Progress colorScheme={colorScheme[i]} value={e[1]} />
+                  </Box>
+                )
+              })}
+            </VStack>
+          </Box>
+          <Text mt={4} color="gray.500">
+            The prediction is for reference only, we suggest you can go to the
+            information doctor based on the data.
+          </Text>
+        </>
+      )}
+    </VStack>
   )
 }
 
@@ -469,5 +629,40 @@ function SwitchDoctorCate (type: string): string {
       return 'General Practitioner'
     default:
       return 'none'
+  }
+}
+
+const sortName = (name: string) => {
+  switch (name) {
+    case 'Acne and Rosacea Photos':
+      return 'Acne and Rosacea'
+    case 'Bullous Disease Photos':
+      return 'Bullous Disease'
+    case 'Cellulitis Impetigo and other Bacterial Infections':
+      return 'Cellulitis Impetigo'
+    case 'Eczema Photos':
+      return 'Eczema'
+    case 'Melanoma Skin Cancer Nevi and Moles':
+      return 'Melanoma Skin Cancer'
+    case 'Poison Ivy Photos and other Contact Dermatitis':
+      return 'Contact Dermatitis'
+    case 'Scabies Lyme Disease and other Infestations and Bites':
+      return 'Scabies Lyme Disease'
+    case 'Seborrheic Keratoses and other Benign Tumors':
+      return 'Seborrheic Keratoses'
+    case 'Systemic Disease':
+      return 'Systemic Disease'
+    case 'Tinea Ringworm Candidiasis and other Fungal Infections':
+      return 'Fungal Infections'
+    case 'Urticaria Hives':
+      return 'Urticaria Hives'
+    case 'Vasculitis Photos':
+      return 'Vasculitis Photos'
+    case 'Warts Molluscum and other Viral Infections':
+      return 'Other Viral Infections'
+    case 'Normal':
+      return 'Normal'
+    default:
+      return 'Not Found'
   }
 }

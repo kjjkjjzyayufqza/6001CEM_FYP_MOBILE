@@ -8,3 +8,9 @@ export interface BotMessageResponseModel {
     suggestions?: string[];
   };
 }
+
+export interface BotImageResponseModel {
+  result?: boolean;
+  message?: string;
+  top5Prediction?: any[];
+}

@@ -347,7 +347,7 @@ export const MOCK_DATA_DOCTOR: MOCK_DATA_DOCTOR_MODEL[] = [
     category: 'Dermatologists',
     location: 'Kowloon Bay',
     openingHours: '11:00 AM - 19:00 PM',
-    about: 'Experience in Treating Skin Conditions',
+    about: 'Experience in Treating Skin problemss',
     image: '',
     locationPoint: {
       latitude: 22.325046,

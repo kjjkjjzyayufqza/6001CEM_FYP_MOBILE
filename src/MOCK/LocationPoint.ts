@@ -11,20 +11,26 @@ export let getDistanceResult: LocationModel = {
   longitude: 0,
 };
 
-export const getDistance = Location.getCurrentPosition(
-  position => {
-    getDistanceResult = {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-    };
-  },
-  error => {
-    console.log('Unable to get your location!');
-  },
-  {enableHighAccuracy: true, maximumAge: 1000},
-);
-
 export const getMeters = ({latitude, longitude}: LocationModel) => {
-  const cal_Distance = geolib.getPreciseDistance(getDistanceResult, {latitude, longitude});
+  const cal_Distance = geolib.getPreciseDistance(getDistanceResult, {
+    latitude,
+    longitude,
+  });
   return cal_Distance * 0.000621 * 1609.344;
 };
+
+export default function getUserLocation() {
+  // Promisify Geolocation.getCurrentPosition since it relies on outdated callbacks
+  return new Promise<LocationModel>((resolve, reject) => {
+    Location.getCurrentPosition(
+      position => {
+        const {latitude, longitude} = position.coords;
+        resolve({latitude, longitude});
+      },
+      error => {
+        reject(error);
+      },
+      {enableHighAccuracy: true, timeout: 15000, maximumAge: 5},
+    );
+  });
+}
