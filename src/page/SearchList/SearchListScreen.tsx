@@ -44,7 +44,9 @@ import {
 } from '../../MOCK'
 import Location from '@react-native-community/geolocation'
 import * as geolib from 'geolib'
-import { LocationModel } from '../../MOCK/LocationPoint'
+import {LocationModel} from '../../MOCK/LocationPoint'
+import {getDoctor} from '../../API'
+import {useNavigation} from '@react-navigation/native'
 
 export const SearchListScreen = () => {
   // ref
@@ -65,10 +67,27 @@ export const SearchListScreen = () => {
     longitude: 0,
   })
 
+  const [doctorList, setDoctorList] = useState<MOCK_DATA_DOCTOR_MODEL[]>([])
+  const navigation = useNavigation()
+  console.log(navigation.getState().routes)
+  const searchName = navigation.getState().routes[1].params
+  console.log(searchName)
+  useEffect(() => {
+    
+    getDoctor({name: searchName})
+      .then(res => {
+        // console.log(res.data)
+        setDoctorList(res.data)
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }, [])
+
   useEffect(() => {
     Location.getCurrentPosition(
       position => {
-        console.log(position.coords)
+        // console.log(position.coords)
         // const a = {latitude: 22.300394, longitude: 114.23495}
         // let b: any = {}
         // b = {
@@ -94,7 +113,7 @@ export const SearchListScreen = () => {
     <VStack flex={1} bg='gray.100'>
       <GestureHandlerRootView style={{flex: 1}}>
         <Box p={3}>
-          <SearchInput bgColor='white' brColor={'gray.200'} />
+          <SearchInput bgColor='white' brColor={'gray.200'} _value={searchName}/>
         </Box>
         <Box p={3} bg={'#F2F2F2'}>
           <HStack
@@ -153,8 +172,8 @@ export const SearchListScreen = () => {
           </Text>
         </Box>
         <FlatList
-          // initialNumToRender={3}
-          data={MOCK_DATA_DOCTOR}
+          initialNumToRender={5}
+          data={doctorList}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({item, index}) => {
             return (
@@ -206,7 +225,7 @@ const RenderItemDoctorList: FC<{
                     h={'150px'}
                     resizeMode={'cover'}
                     source={{
-                      uri: 'https://thumbs.dreamstime.com/b/senior-doctor-holding-papers-smiling-23096004.jpg',
+                      uri: item.image,
                     }}
                     alt='image'
                   />
@@ -339,13 +358,6 @@ const SortBottomSheet: FC<SortBottomSheetModal> = ({_bottomSheetModalRef}) => {
                 /> */}
               </HStack>
             </TouchableOpacity>
-            <TouchableOpacity>
-              <Box py={2}>
-                <Text fontWeight={600} fontSize={'lg'}>
-                  Sort by name
-                </Text>
-              </Box>
-            </TouchableOpacity>
           </VStack>
         </BottomSheetModal>
       </View>
@@ -467,4 +479,7 @@ const FilterBottomSheet: FC<FilterBottomSheetModal> = ({
       </View>
     </BottomSheetModalProvider>
   )
+}
+function useNavigationParam (arg0: string) {
+  throw new Error('Function not implemented.')
 }

@@ -11,19 +11,20 @@ import { navigateTo } from './RootNavigation'
 interface SearchInputModel {
   bgColor?: string
   brColor?: string
+  _value?: string
 }
 
-export const SearchInput: React.FC<SearchInputModel> = ({bgColor, brColor}) => {
+export const SearchInput: React.FC<SearchInputModel> = ({bgColor, brColor,_value}) => {
   useEffect(() => {
     return () => {}
   }, [])
 
   return (
     <Formik
-      initialValues={{searchValue: ''}}
+      initialValues={{searchValue: _value ?? ''}}
       onSubmit={values => {
-        console.log(values)
-        navigateTo('SearchList', {userName: 'aa'})
+        // console.log(values)
+        navigateTo('SearchList', values.searchValue)
       }}>
       {({handleChange, handleBlur, handleSubmit, values}) => (
         <HStack space={4}>

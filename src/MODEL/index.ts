@@ -14,3 +14,24 @@ export interface BotImageResponseModel {
   message?: string;
   top5Prediction?: any[];
 }
+
+export interface LoginModel {
+  email: string;
+  password: string;
+}
+
+export interface RegisterModel {
+  name: string;
+  email: string;
+  password: string;
+}
+export interface TokenModel {
+  access_token: string;
+  token_type: string;
+}
+
+export interface FindDoctorModel {
+  name?: string;
+  category?: string;
+  location?: string;
+}

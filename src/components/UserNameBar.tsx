@@ -17,17 +17,17 @@ import { navigateTo } from './RootNavigation'
 export const UserNameBar = () => {
   const [isLogin, setIsLogin] = useState<boolean>(false)
   useEffect(() => {
-    AsyncStorage.setItem('isLogin', 'false')
-    AsyncStorage.getItem('isLogin').then(value => {
-      if (value != null) {
-        console.log(value)
-        if (value == 'true') {
-          setIsLogin(true)
-        } else {
-          setIsLogin(false)
-        }
-      }
-    })
+    // AsyncStorage.setItem('isLogin', 'false')
+    // AsyncStorage.getItem('isLogin').then(value => {
+    //   if (value != null) {
+    //     console.log(value)
+    //     if (value == 'true') {
+    //       setIsLogin(true)
+    //     } else {
+    //       setIsLogin(false)
+    //     }
+    //   }
+    // })
   }, [])
 
   return (

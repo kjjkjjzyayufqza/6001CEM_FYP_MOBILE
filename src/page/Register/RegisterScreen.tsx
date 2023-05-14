@@ -13,6 +13,7 @@ import {
   Text,
   VStack,
   WarningOutlineIcon,
+  useToast,
 } from 'native-base'
 import React, {useState} from 'react'
 import {TouchableOpacity} from 'react-native'
@@ -20,6 +21,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import * as Yup from 'yup'
 import {ThreeCirBox} from '../../components/ThreeCirBox'
 import {navigateTo} from '../../components/RootNavigation'
+import {login, register, uploadLocalStr} from '../../API'
+import {SHA256} from 'crypto-js'
 
 export const RegisterScreen = () => {
   let userSchema = Yup.object().shape({
@@ -29,11 +32,12 @@ export const RegisterScreen = () => {
     email: Yup.string().email('Invalid email').required('Required'),
     password: Yup.string()
       .required('No password provided.')
-      .min(8, 'Password is too short - should be 8 chars minimum.')
-      .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.'),
+      .min(8, 'Password is too short - should be 8 chars minimum.'),
+    // .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.'),
   })
   const [show, setShow] = useState(false)
-
+  const [errorMsg, setErrorMsg] = useState<string>()
+  const toast = useToast();
   return (
     <ScrollView bg={'white'}>
       <VStack flex={1}>
@@ -42,7 +46,37 @@ export const RegisterScreen = () => {
           <Formik
             initialValues={{name: '', email: '', password: ''}}
             onSubmit={values => {
-              console.log(values)
+              const hash_ps = SHA256(values.password).toString()
+              register({
+                name: values.name,
+                email: values.email,
+                password: hash_ps,
+              })
+                .then(res => {
+                  console.log(res.data)
+                  login({email: values.email, password: hash_ps})
+                    .then(lres => {
+                      uploadLocalStr(lres.data)
+                      navigateTo('Main', {})
+                    })
+                    .catch(lerr => {
+                      console.log('register then login error')
+                    })
+                })
+                .catch(err => {
+                  console.log(err)
+                  if (err.response.data) {
+                    toast.show({
+                      title: err.response.data.detail,
+                      placement: 'top',
+                    })
+                  }else{
+                    toast.show({
+                      title: 'Network Error',
+                      placement: 'top',
+                    })
+                  }
+                })
             }}
             validationSchema={userSchema}>
             {({handleChange, handleBlur, handleSubmit, values, errors}) => (

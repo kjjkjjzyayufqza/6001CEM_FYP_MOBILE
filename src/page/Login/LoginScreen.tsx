@@ -1,5 +1,6 @@
 import {ErrorMessage, Formik} from 'formik'
 import {
+  Alert,
   Box,
   Button,
   Divider,
@@ -8,30 +9,57 @@ import {
   Icon,
   Input,
   Pressable,
+  Slide,
   Spacer,
   Text,
   VStack,
   WarningOutlineIcon,
+  useToast,
 } from 'native-base'
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import * as Yup from 'yup'
 import {ThreeCirBox} from '../../components/ThreeCirBox'
 import {navigateTo} from '../../components/RootNavigation'
+import {getToken, login, uploadLocalStr} from '../../API'
+import {SHA256} from 'crypto-js'
+import {TokenModel} from '../../MODEL'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export const LoginScreen = () => {
   let userSchema = Yup.object().shape({
     email: Yup.string().email('Invalid email').required('Required'),
     password: Yup.string()
       .required('No password provided.')
-      .min(8, 'Password is too short - should be 8 chars minimum.')
-      .matches(/[a-zA-Z]/, 'Password can only contain Latin letters.'),
+      .min(8, 'Password is too short - should be 8 chars minimum.'),
   })
   const [show, setShow] = useState(false)
+  const [isOpenTop, setIsOpenTop] = useState<{open: boolean; message: string}>({
+    open: false,
+    message: '',
+  })
+  const toast = useToast()
+
+
+  useEffect(() => {
+    if (isOpenTop) {
+      const timer = setTimeout(() => {
+        setIsOpenTop({open: false, message: ''})
+      }, 3000)
+    }
+  }, [isOpenTop])
 
   return (
     <VStack flex={1}>
+      <Slide in={isOpenTop.open} placement='top' duration={100}>
+        <Alert justifyContent='center' status={'success'}>
+          <Alert.Icon />
+          <Text color={'black'} fontWeight='medium'>
+            {isOpenTop.message}
+          </Text>
+        </Alert>
+      </Slide>
       <ThreeCirBox
         Title={'Sign in to your Account'}
         sTitle={'Sign in to your Account'}
@@ -40,7 +68,22 @@ export const LoginScreen = () => {
         <Formik
           initialValues={{email: '', password: ''}}
           onSubmit={values => {
-            console.log(values)
+            const hash_ps = SHA256(values.password).toString()
+            // console.log(values.password, hash_ps)
+            login({email: values.email, password: hash_ps})
+              .then(res => {
+                uploadLocalStr(res.data)
+                setIsOpenTop({open: true, message: 'Login successful'})
+                navigateTo('Main', {})
+                getToken()
+              })
+              .catch(err => {
+                console.log(err)
+                toast.show({
+                  description: 'Incorrect email or password',
+                  placement: 'top',
+                })
+              })
           }}
           validationSchema={userSchema}>
           {({handleChange, handleBlur, handleSubmit, values, errors}) => (
