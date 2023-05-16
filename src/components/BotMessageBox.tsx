@@ -37,7 +37,7 @@ import {
 import AntDesign from 'react-native-vector-icons/AntDesign'
 import {navigateTo} from './RootNavigation'
 import getUserLocation, {LocationModel} from '../MOCK/LocationPoint'
-import {MOCK_DATA_DOCTOR} from '../MOCK'
+import {MOCK_DATA_DOCTOR, MOCK_DATA_DOCTOR_MODEL} from '../MOCK'
 import * as geolib from 'geolib'
 import * as ImagePicker from 'react-native-image-picker'
 import {decode as atob, encode as btoa} from 'base-64'
@@ -72,6 +72,7 @@ export const BotMessageBox: React.FC<BotMessageBoxModel> = ({
     text: '',
     user: {_id: 0, name: 'Bot'},
   })
+  const [isSkinIssue, setIsSkinIssue] = useState<boolean>(false)
 
   const selectList = ['According to the description, this may be ']
   const ignore_tag = [
@@ -119,6 +120,9 @@ export const BotMessageBox: React.FC<BotMessageBoxModel> = ({
                     </Text>
                   </Text>
                 )
+                if (botMessage.startsWith('skin issue')) {
+                  setIsSkinIssue(true)
+                }
                 setMessage(message)
                 // console.log(res.data.botMessage)
                 setShowSuggestions(
@@ -144,13 +148,15 @@ export const BotMessageBox: React.FC<BotMessageBoxModel> = ({
 
   return (
     <View>
-      {!onlyUpload && onlyUpload == false && (
+      {!onlyUpload && onlyUpload == false ? (
         <>
           <Text>{message}</Text>
           {showSuggestions}
+          {isSkinIssue && <ImageUploadBox />}
         </>
+      ) : (
+        <ImageUploadBox />
       )}
-      <ImageUploadBox />
     </View>
   )
 }
@@ -261,9 +267,11 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
   const DoctorData = MOCK_DATA_DOCTOR
 
   let locationPointData: LocationModel
+  let _doctorData: MOCK_DATA_DOCTOR_MODEL
   DoctorData.map(e => {
     if (e.category == SwitchDoctorCate(Type)) {
       locationPointData = e.locationPoint
+      _doctorData = e
     }
   })
   // console.log()
@@ -285,7 +293,7 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
     <Box>
       <Pressable
         onPress={() => {
-          navigateTo('SearchList', {})
+          navigateTo('Detail', _doctorData)
         }}>
         {({isHovered, isFocused, isPressed}) => {
           return (
@@ -316,7 +324,7 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
                     resizeMode: 'cover',
                     borderRadius: 5,
                   }}
-                  source={require('../../public/img/doctorList.png')}
+                  source={{uri: _doctorData.image}}
                   alt='image'
                 />
                 <VStack flex={1} px={1}>
@@ -326,7 +334,7 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
                       fontWeight='600'
                       fontSize='18px'
                       lineHeight={'19px'}>
-                      Dr. Johnson
+                      {_doctorData.name}
                     </Text>
                   </View>
                   <Text fontSize='13px' color='#9E9E9E' mb={-1} mt={2}>
@@ -348,11 +356,12 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
               </Text> */}
                 </VStack>
               </HStack>
+
               <Text
                 fontSize='sm'
                 color='black'
                 style={{textAlign: 'left'}}
-                top={6}>
+                top={3}>
                 Recommends the doctor closest to you.
               </Text>
               {isLoadingDistance ? (
@@ -363,13 +372,21 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
                   </Text>
                 </HStack>
               ) : (
-                <Text
-                  fontSize='sm'
-                  color='gray.400'
-                  style={{textAlign: 'left'}}
-                  top={6}>
-                  Distance from you {resultValue && resultValue.toFixed(2)}M
-                </Text>
+                <VStack>
+                  <Text
+                    fontSize='14px'
+                    color='#0099EB'
+                    overflow={'hidden'}
+                    top={2}>
+                    {_doctorData.location}
+                  </Text>
+                  <Text
+                    fontSize='sm'
+                    color='gray.400'
+                    style={{textAlign: 'left'}}>
+                    Distance from you {resultValue && resultValue.toFixed(2)}M
+                  </Text>
+                </VStack>
               )}
             </Box>
           )
@@ -498,7 +515,7 @@ const ImageUploadBox: FC<any> = () => {
               })}
             </VStack>
           </Box>
-          <Text mt={4} color="gray.500">
+          <Text mt={4} color='gray.500'>
             The prediction is for reference only, we suggest you can go to the
             information doctor based on the data.
           </Text>
@@ -535,17 +552,6 @@ function SwitchDoctorCate (type: string): string {
     'internal pain',
     'open wound',
     'body feels weak',
-  ]
-
-  const allDoctorCta = [
-    'General Surgeon',
-    'General Practitioner',
-    'Dermatologists',
-    'Orthopedic Surgeon',
-    'Ophthalmologist',
-    'Internal Medicine Physician',
-    'Otolaryngologist',
-    'Psychologist',
   ]
 
   switch (type) {

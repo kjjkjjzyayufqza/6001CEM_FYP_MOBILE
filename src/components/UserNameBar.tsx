@@ -8,27 +8,25 @@ import {
   Text,
   VStack,
 } from 'native-base'
-import React, {useEffect, useState} from 'react'
+import React, {FC, useEffect, useState} from 'react'
 import {Basestyles} from '../../Styles/Styles'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { navigateTo } from './RootNavigation'
+import {navigateTo} from './RootNavigation'
+import {getUser} from '../API'
+import {useIsFocused} from '@react-navigation/native'
 
-export const UserNameBar = () => {
+export const UserNameBar: FC<{_isLogin: boolean; _userName: string}> = ({
+  _isLogin,
+  _userName,
+}) => {
   const [isLogin, setIsLogin] = useState<boolean>(false)
+  const [userName, setUserName] = useState<string>()
+
   useEffect(() => {
-    // AsyncStorage.setItem('isLogin', 'false')
-    // AsyncStorage.getItem('isLogin').then(value => {
-    //   if (value != null) {
-    //     console.log(value)
-    //     if (value == 'true') {
-    //       setIsLogin(true)
-    //     } else {
-    //       setIsLogin(false)
-    //     }
-    //   }
-    // })
-  }, [])
+    setIsLogin(_isLogin)
+    setUserName(_userName)
+  }, [_isLogin,_userName])
 
   return (
     <VStack flex={1} alignItems='center'>
@@ -41,7 +39,7 @@ export const UserNameBar = () => {
       {isLogin ? (
         <HStack px={5}>
           <Text fontSize={30} fontWeight={600}>
-            Radovan
+            {userName}
           </Text>
           <Spacer />
           <Avatar
@@ -62,7 +60,7 @@ export const UserNameBar = () => {
           <Button
             variant={'ghost'}
             onPress={() => {
-              navigateTo('LoginScreen',{})
+              navigateTo('LoginScreen', {})
             }}>
             Sign in
           </Button>

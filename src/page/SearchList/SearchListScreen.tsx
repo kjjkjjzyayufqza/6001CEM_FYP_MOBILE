@@ -41,12 +41,16 @@ import {
   MOCK_DATA_DOCTOR,
   MOCK_DATA_DOCTOR_MODEL,
   MOCK_DATA_DOCTOR_ONE,
+  allDoctorCta,
+  allLocation,
 } from '../../MOCK'
 import Location from '@react-native-community/geolocation'
 import * as geolib from 'geolib'
 import {LocationModel} from '../../MOCK/LocationPoint'
 import {getDoctor} from '../../API'
 import {useNavigation} from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { navigateTo } from '../../components/RootNavigation'
 
 export const SearchListScreen = () => {
   // ref
@@ -68,21 +72,86 @@ export const SearchListScreen = () => {
   })
 
   const [doctorList, setDoctorList] = useState<MOCK_DATA_DOCTOR_MODEL[]>([])
+  const [searchName, setSearchName] = useState<string>('')
+  const [sortByTitle, setSortByTitle] = useState<string>()
+  const [filterValue, setFilterValue] = useState<
+    | {
+        category: string
+        location: string
+      }
+    | undefined
+  >(undefined)
   const navigation = useNavigation()
-  console.log(navigation.getState().routes)
-  const searchName = navigation.getState().routes[1].params
-  console.log(searchName)
+
   useEffect(() => {
-    
-    getDoctor({name: searchName})
-      .then(res => {
-        // console.log(res.data)
-        setDoctorList(res.data)
-      })
-      .catch(err => {
-        console.log(err)
-      })
+    let temp_searchName: any = ''
+    let temp_category: any = ''
+    navigation.getState().routes.map(e => {
+      if (e.name == 'SearchList') {
+        const temp: any = e.params
+        if (temp?.categories) {
+          temp_category = temp?.categories
+          getDoctor({category: temp_category})
+            .then(res => {
+              // console.log(res.data)
+              setDoctorList(res.data)
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        } else {
+          temp_searchName = temp
+          setSearchName(temp_searchName)
+          getDoctor({category: temp_category})
+            .then(res => {
+              // console.log(res.data)
+              setDoctorList(res.data)
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      }
+    })
   }, [])
+
+  useEffect(() => {
+    if (filterValue) {
+      console.log(1)
+      console.log(filterValue)
+      getDoctor({
+        name: searchName,
+        category: filterValue?.category,
+        location: filterValue?.location,
+      })
+        .then(res => {
+          // console.log(res.data)
+          setDoctorList(res.data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  }, [filterValue])
+
+  useEffect(() => {
+    if (searchName) {
+      console.log(2)
+
+      getDoctor({
+        name: searchName,
+        category: filterValue?.category,
+        location: filterValue?.location,
+      })
+        .then(res => {
+          // console.log(res.data)
+          setDoctorList(res.data)
+        })
+        .catch(err => {
+          console.log(err)
+        })
+    }
+  }, [searchName])
 
   useEffect(() => {
     Location.getCurrentPosition(
@@ -113,7 +182,14 @@ export const SearchListScreen = () => {
     <VStack flex={1} bg='gray.100'>
       <GestureHandlerRootView style={{flex: 1}}>
         <Box p={3}>
-          <SearchInput bgColor='white' brColor={'gray.200'} _value={searchName}/>
+          <SearchInput
+            bgColor='white'
+            brColor={'gray.200'}
+            _value={searchName}
+            _onSubmit={e => {
+              setSearchName(e)
+            }}
+          />
         </Box>
         <Box p={3} bg={'#F2F2F2'}>
           <HStack
@@ -138,7 +214,7 @@ export const SearchListScreen = () => {
                     color='#828282'
                     style={{paddingRight: 10}}
                   />
-                  <Text>Sort by</Text>
+                  <Text>{sortByTitle ?? 'Sort By'}</Text>
                 </HStack>
               </Box>
             </TouchableOpacity>
@@ -168,7 +244,7 @@ export const SearchListScreen = () => {
         </Box>
         <Box px={3} pt={3}>
           <Text color='coolGray.800' fontWeight={500} fontSize={15}>
-            Show results : 99
+            Show results : {doctorList.length}
           </Text>
         </Box>
         <FlatList
@@ -183,8 +259,22 @@ export const SearchListScreen = () => {
               />
             )
           }}></FlatList>
-        <SortBottomSheet _bottomSheetModalRef={bottomSheetModalRef_sort} />
-        <FilterBottomSheet _bottomSheetModalRef={bottomSheetModalRef_filter} />
+        <SortBottomSheet
+          _bottomSheetModalRef={bottomSheetModalRef_sort}
+          onClick={e => {
+            setSortByTitle(e)
+          }}
+        />
+        <FilterBottomSheet
+          _bottomSheetModalRef={bottomSheetModalRef_filter}
+          onClick={(category, location) => {
+            console.log('click了')
+            setFilterValue({
+              category: category as any,
+              location: location as any,
+            })
+          }}
+        />
       </GestureHandlerRootView>
     </VStack>
   )
@@ -202,7 +292,9 @@ const RenderItemDoctorList: FC<{
 
   return (
     <Box p={3}>
-      <Pressable onPress={() => console.log("I'm Pressed")}>
+      <Pressable onPress={() => {
+        navigateTo('Detail',item)
+      }}>
         <Box
           rounded='lg'
           borderColor='coolGray.200'
@@ -305,15 +397,21 @@ const RenderItemDoctorList: FC<{
 
 interface SortBottomSheetModal {
   _bottomSheetModalRef: any
+  onClick: (e: string) => void
 }
 
-const SortBottomSheet: FC<SortBottomSheetModal> = ({_bottomSheetModalRef}) => {
+const SortBottomSheet: FC<SortBottomSheetModal> = ({
+  _bottomSheetModalRef,
+  onClick,
+}) => {
   // variables
   const snapPoints = useMemo(() => ['49.9%', '50%'], [])
 
   const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index)
+    // console.log('handleSheetChanges', index)
   }, [])
+
+  const [selectItem, setSelectItem] = useState<number>()
 
   useEffect(() => {}, [])
 
@@ -330,32 +428,44 @@ const SortBottomSheet: FC<SortBottomSheetModal> = ({_bottomSheetModalRef}) => {
           onChange={handleSheetChanges}>
           <VStack px={3}>
             <Text fontWeight={600} color={'#7e7e7e'} mb={1}>
-              SORT BY
+              Sort By
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectItem(0)
+                onClick('Recommended')
+              }}>
               <HStack py={2}>
                 <Text fontWeight={600} fontSize={'lg'}>
                   Recommended
                 </Text>
                 <Spacer />
-                <MaterialCommunityIcons
-                  name='record-circle-outline'
-                  size={25}
-                  color={'black'}
-                />
+                {selectItem == 0 && (
+                  <MaterialCommunityIcons
+                    name='record-circle-outline'
+                    size={25}
+                    color={'black'}
+                  />
+                )}
               </HStack>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                setSelectItem(1)
+                onClick('Sort by area distance')
+              }}>
               <HStack py={2}>
                 <Text fontWeight={600} fontSize={'lg'}>
                   Sort by area distance
                 </Text>
                 <Spacer />
-                {/* <MaterialCommunityIcons
-                  name='record-circle-outline'
-                  size={25}
-                  color={'black'}
-                /> */}
+                {selectItem == 1 && (
+                  <MaterialCommunityIcons
+                    name='record-circle-outline'
+                    size={25}
+                    color={'black'}
+                  />
+                )}
               </HStack>
             </TouchableOpacity>
           </VStack>
@@ -367,24 +477,27 @@ const SortBottomSheet: FC<SortBottomSheetModal> = ({_bottomSheetModalRef}) => {
 
 interface FilterBottomSheetModal {
   _bottomSheetModalRef: any
+  onClick: (category?: string, location?: string) => void
 }
 
 const FilterBottomSheet: FC<FilterBottomSheetModal> = ({
   _bottomSheetModalRef,
+  onClick,
 }) => {
   // variables
   const snapPoints = useMemo(() => [350, '70%'], [])
 
   const handleSheetChanges = useCallback((index: number) => {
-    console.log('handleSheetChanges', index)
+    // console.log('handleSheetChanges', index)
   }, [])
-  const [categoryValue, setCategoryValue] = useState('')
-  const [locationValue, setLocationValue] = useState('')
+  const [categoryValue, setCategoryValue] = useState<string>()
+  const [locationValue, setLocationValue] = useState<string>()
 
-  const clearAllValue = () => {
-    setCategoryValue('')
-    setLocationValue('')
-  }
+  useEffect(() => {
+    if (categoryValue || locationValue) {
+      onClick(categoryValue, locationValue)
+    }
+  }, [categoryValue, locationValue])
 
   return (
     <BottomSheetModalProvider>
@@ -404,7 +517,12 @@ const FilterBottomSheet: FC<FilterBottomSheetModal> = ({
                   Filter
                 </Text>
               </HStack>
-              <TouchableOpacity onPress={clearAllValue}>
+              <TouchableOpacity
+                onPress={() => {
+                  setCategoryValue('')
+                  setLocationValue('')
+                  onClick('', '')
+                }}>
                 <Text
                   fontWeight={400}
                   fontSize={15}
@@ -437,12 +555,9 @@ const FilterBottomSheet: FC<FilterBottomSheetModal> = ({
                 }}
                 mt={1}
                 onValueChange={itemValue => setCategoryValue(itemValue)}>
-                <Select.Item
-                  label='General Practitioner'
-                  value='General Practitioner'
-                />
-                <Select.Item label='Surgeon' value='Surgeon' />
-                <Select.Item label='Pediatrician' value='Pediatrician' />
+                {allDoctorCta.map((e, i) => {
+                  return <Select.Item key={i} label={e} value={e} />
+                })}
               </Select>
             </HStack>
             <HStack py={3}>
@@ -466,12 +581,9 @@ const FilterBottomSheet: FC<FilterBottomSheetModal> = ({
                 }}
                 mt={1}
                 onValueChange={itemValue => setLocationValue(itemValue)}>
-                <Select.Item label='Kowloon Bay' value='Kowloon Bay' />
-                <Select.Item label='Kwun Tong' value='Kwun Tong' />
-                <Select.Item label='Mongkok' value='Mongkok' />
-                <Select.Item label='Shatin' value='Shatin' />
-                <Select.Item label='Tsim Sha Tsui' value='Tsim Sha Tsui' />
-                <Select.Item label='Whampoa' value='Whampoa' />
+                {allLocation.map((e, i) => {
+                  return <Select.Item key={i} label={e} value={e} />
+                })}
               </Select>
             </HStack>
           </VStack>
@@ -479,7 +591,4 @@ const FilterBottomSheet: FC<FilterBottomSheetModal> = ({
       </View>
     </BottomSheetModalProvider>
   )
-}
-function useNavigationParam (arg0: string) {
-  throw new Error('Function not implemented.')
 }

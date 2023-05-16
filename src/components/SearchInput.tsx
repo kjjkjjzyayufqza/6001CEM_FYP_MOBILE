@@ -1,30 +1,44 @@
-import {Button, HStack, Input, Text, View} from 'native-base'
+import {Button, HStack, Input, Text, View, useToast} from 'native-base'
 import React, {useEffect, useState} from 'react'
 import {TouchableOpacity} from 'react-native'
 import {Send} from 'react-native-gifted-chat'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Basestyles} from '../../Styles/Styles'
 import {Formik} from 'formik'
-import {createNavigationContainerRef} from '@react-navigation/native'
-import { navigateTo } from './RootNavigation'
+import {createNavigationContainerRef, useIsFocused} from '@react-navigation/native'
+import {navigateTo} from './RootNavigation'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 interface SearchInputModel {
   bgColor?: string
   brColor?: string
   _value?: string
+  _onSubmit: (value: any) => void
+  _isLogin?: boolean
 }
 
-export const SearchInput: React.FC<SearchInputModel> = ({bgColor, brColor,_value}) => {
+export const SearchInput: React.FC<SearchInputModel> = ({
+  bgColor,
+  brColor,
+  _value,
+  _onSubmit,
+  _isLogin,
+}) => {
+  const toast = useToast()
+  const [isLogin, setIsLogin] = useState<boolean>()
+  const isFocused = useIsFocused()
+
   useEffect(() => {
-    return () => {}
-  }, [])
+    setIsLogin(_isLogin)
+  }, [_isLogin])
 
   return (
     <Formik
-      initialValues={{searchValue: _value ?? ''}}
+      enableReinitialize
+      initialValues={{searchValue: _value}}
       onSubmit={values => {
         // console.log(values)
-        navigateTo('SearchList', values.searchValue)
+        _onSubmit(values.searchValue)
       }}>
       {({handleChange, handleBlur, handleSubmit, values}) => (
         <HStack space={4}>
@@ -62,7 +76,19 @@ export const SearchInput: React.FC<SearchInputModel> = ({bgColor, brColor,_value
               clearButtonMode='always'
             />
           </View>
-          <Button onPress={handleSubmit} bg='#4191E7' rounded={6}>
+          <Button
+            onPress={() => {
+              if (!isLogin) {
+                toast.show({
+                  title: 'Must be logged in to use',
+                  placement: 'top',
+                })
+              } else {
+                handleSubmit()
+              }
+            }}
+            bg={isLogin ? '#4191E7' : '#C8C8C8'}
+            rounded={6}>
             Search
           </Button>
         </HStack>

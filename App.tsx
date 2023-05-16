@@ -23,6 +23,7 @@ import {LoginScreen} from './src/page/Login/LoginScreen'
 import {ForgotPSScreen} from './src/page/ForgotPS/ForgotPSScreen'
 import {ReSetPasswordScreen} from './src/page/ForgotPS/ReSetPasswordScreen'
 import {RegisterScreen} from './src/page/Register/RegisterScreen'
+import {Detail} from './src/page/Detail/Detail'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -61,10 +62,17 @@ function MainTabView () {
             <Entypo name='chat' color={color} size={size} />
           ),
           headerRight: () => (
-            <Button onPress={() => {
-              PubSub.publish('ClearAllMessage', 'null');
-            }} color='#ffffff' variant={'ghost'}>
-              <MaterialCommunityIcons name='chat-remove-outline' size={20} color={'white'} />
+            <Button
+              onPress={() => {
+                PubSub.publish('ClearAllMessage', 'null')
+              }}
+              color='#ffffff'
+              variant={'ghost'}>
+              <MaterialCommunityIcons
+                name='chat-remove-outline'
+                size={20}
+                color={'white'}
+              />
             </Button>
           ),
         }}
@@ -145,6 +153,15 @@ function App (): JSX.Element {
               headerTransparent: true,
               headerTitle: '',
               headerTintColor: 'white',
+            }}
+          />
+          <Stack.Screen
+            name='Detail'
+            component={Detail}
+            options={{
+              headerTransparent: true,
+              headerTitle: '',
+              headerTintColor: 'black',
             }}
           />
         </Stack.Navigator>

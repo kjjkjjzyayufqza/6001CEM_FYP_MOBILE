@@ -48,10 +48,12 @@ instance.interceptors.response.use(
   },
   function (error) {
     // 对响应错误做点什么
-    if (error.response.status == 401) {
-      console.log('401了');
-      AsyncStorage.setItem('isLogin', 'false');
-      AsyncStorage.setItem('token', '');
+    if (error.response) {
+      if (error.response?.status == 401) {
+        console.log('401了');
+        AsyncStorage.setItem('isLogin', 'false');
+        AsyncStorage.setItem('token', '');
+      }
     }
     return Promise.reject(error);
   },
@@ -134,4 +136,10 @@ export function getDoctor({
     location,
   };
   return instance.get('FindDoctor', {params});
+}
+
+export function getUser(): Promise<
+  AxiosResponse<{name: string; email: string}>
+> {
+  return instance.get('User');
 }

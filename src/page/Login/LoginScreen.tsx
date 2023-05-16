@@ -74,8 +74,8 @@ export const LoginScreen = () => {
               .then(res => {
                 uploadLocalStr(res.data)
                 setIsOpenTop({open: true, message: 'Login successful'})
-                navigateTo('Main', {})
                 getToken()
+                navigateTo('Main', {})
               })
               .catch(err => {
                 console.log(err)

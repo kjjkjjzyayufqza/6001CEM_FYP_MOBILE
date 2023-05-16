@@ -25,7 +25,6 @@ import {postBotMessage} from '../../API'
 import {BotMessageBox, makeid} from '../../components/BotMessageBox'
 import {QuickReplies} from 'react-native-gifted-chat/lib/QuickReplies'
 import PubSub from 'pubsub-js'
-
 export const ChatScreen = () => {
   const [messages, setMessages] = useState<IMessage[]>([])
   // const [customInputMessage, setCustomInputMessage] = useState<string>('')
@@ -58,9 +57,11 @@ export const ChatScreen = () => {
               value: 'My stomach feels uncomfortable.',
             },
             {
-              title: 'I want to upload pictures of my skin to tell what skin problems I have.',
-              value: 'I want to upload pictures of my skin to tell what skin problems I have.'
-            }
+              title:
+                'I want to upload pictures of my skin to tell what skin problems I have.',
+              value:
+                'I want to upload pictures of my skin to tell what skin problems I have.',
+            },
           ],
         },
       },
@@ -84,15 +85,20 @@ export const ChatScreen = () => {
         },
       ])
     }
+
+    let onSpeechText = async (msg: any, data: any) => {}
+
     // add the function to the list of subscribers for a particular topic
     // we're keeping the returned token, in order to be able to unsubscribe
     // from the topic later on
     let token = PubSub.subscribe('ClearAllMessage', ClearAllMessage)
     let quickSend = PubSub.subscribe('QuickSendMessage', QuickSendMessage)
+    let speechText = PubSub.subscribe('onSpeechText', onSpeechText)
     return () => {
       setMessages([])
       PubSub.unsubscribe(token)
       PubSub.unsubscribe(quickSend)
+      PubSub.unsubscribe(speechText)
     }
   }, [])
 

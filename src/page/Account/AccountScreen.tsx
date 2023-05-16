@@ -3,16 +3,23 @@ import {
   Divider,
   HStack,
   Heading,
+  Pressable,
   Spacer,
   Text,
   VStack,
   View,
+  useToast,
 } from 'native-base'
 import React from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import {Basestyles} from '../../../Styles/Styles'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useNavigation } from '@react-navigation/native'
+import { navigateTo } from '../../components/RootNavigation'
 
 export const AccountScreen = () => {
+  const nav = useNavigation()
+  const toast = useToast()
   return (
     <VStack flex={1} bg={'white'}>
       <Box p={4}>
@@ -21,15 +28,9 @@ export const AccountScreen = () => {
             Action
           </Heading>
           <HStack justifyContent={'space-between'} space={4}>
-            <Box
+            <Pressable
               h={'50px'}
               w={'45%'}
-              _text={{
-                fontSize: 'md',
-                fontWeight: 'medium',
-                color: 'black',
-                letterSpacing: 'lg',
-              }}
               style={Basestyles.baseShadow}
               bg='white'
               rounded={5}>
@@ -38,25 +39,29 @@ export const AccountScreen = () => {
                 <Spacer />
                 <MaterialIcons name='arrow-right' size={20} />
               </HStack>
-            </Box>
-            <Box
+            </Pressable>
+            <Pressable
               h={'50px'}
               w={'45%'}
-              _text={{
-                fontSize: 'md',
-                fontWeight: 'medium',
-                color: 'black',
-                letterSpacing: 'lg',
-              }}
               style={Basestyles.baseShadow}
               bg='white'
-              rounded={5}>
+              rounded={5}
+              onPress={() => {
+                AsyncStorage.clear()
+                  .then(res => {})
+                  .catch(err => {})
+                toast.show({
+                  title: 'Successful logout',
+                  placement: 'top',
+                })
+                nav.goBack()
+              }}>
               <HStack p={2}>
                 <Text fontSize={'md'}>Logout</Text>
                 <Spacer />
                 <MaterialIcons name='arrow-right' size={20} />
               </HStack>
-            </Box>
+            </Pressable>
           </HStack>
         </Box>
       </Box>

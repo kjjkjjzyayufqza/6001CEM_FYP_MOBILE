@@ -91,7 +91,9 @@ export const ChatMessageInput: React.FC<ChatMessageInputModel> = ({
                     />
                   </View>
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {}}>
+                <TouchableOpacity onPress={() => {
+                  PubSub.publish('onSpeechText', "hi")
+                }}>
                   <View style={{marginTop: 8}}>
                     <Icon
                       name='microphone'

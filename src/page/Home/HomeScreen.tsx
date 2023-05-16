@@ -14,18 +14,98 @@ import {
   Text,
   VStack,
   View,
+  useToast,
 } from 'native-base'
-import React, {useEffect} from 'react'
+import React, {FC, ReactNode, useEffect, useState} from 'react'
 import SearchInput from '../../components/SearchInput'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import {TouchableOpacity} from 'react-native'
 import {UserNameBar} from '../../components/UserNameBar'
 import {getDistanceResult} from '../../MOCK/LocationPoint'
+import {navigateTo} from '../../components/RootNavigation'
+import {useIsFocused} from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {getUser} from '../../API'
 
 export const HomeScreen = () => {
+  // check if screen is focused
+  const [isLogin, setIsLogin] = useState<boolean>(false)
+  const [userName, setUserName] = useState<string>()
+  const isFocused = useIsFocused()
+  // listen for isFocused, if useFocused changes
+  // call the function that you use to mount the component.
   useEffect(() => {
-    const a = getDistanceResult
-  }, [])
+    isFocused &&
+      AsyncStorage.getItem('isLogin').then(value => {
+        if (value != null) {
+          if (value == 'true') {
+            setIsLogin(true)
+            getUser()
+              .then(res => {
+                setIsLogin(true)
+                setUserName(res.data.name)
+              })
+              .catch(err => {
+                console.log('Get User Fail')
+              })
+          } else {
+            setIsLogin(false)
+          }
+        } else {
+          setIsLogin(false)
+        }
+      })
+  }, [isFocused])
+
+  const categoriesList = [
+    'General Practitioner',
+    'Ophthalmologist',
+    'General Surgeon',
+    'Dermatologists',
+    'Orthopedic Surgeon',
+    'Internal Medicine Physician',
+    'Otolaryngologist',
+    'Psychologist',
+  ]
+
+  const categoriesIconAndBG = [
+    {
+      icon: <MaterialCommunityIcons name='human' size={30} color={'white'} />,
+      iconBg: '#E75B5B',
+    },
+    {
+      icon: (
+        <MaterialCommunityIcons name='eye-outline' size={30} color={'white'} />
+      ),
+      iconBg: '#C89247',
+    },
+    {
+      icon: <MaterialCommunityIcons name='human' size={30} color={'white'} />,
+      iconBg: '#95C847',
+    },
+    {
+      icon: <MaterialCommunityIcons name='bone' size={30} color={'white'} />,
+      iconBg: '#4FC847',
+    },
+    {
+      icon: (
+        <MaterialCommunityIcons name='eye-outline' size={30} color={'white'} />
+      ),
+      iconBg: '#47ABC8',
+    },
+    {
+      icon: <MaterialCommunityIcons name='human' size={30} color={'white'} />,
+      iconBg: '#4749C8',
+    },
+    {
+      icon: <MaterialCommunityIcons name='human' size={30} color={'white'} />,
+      iconBg: '#C847C8',
+    },
+    {
+      icon: <MaterialCommunityIcons name='human' size={30} color={'white'} />,
+      iconBg: '#EBD33D',
+    },
+  ]
 
   return (
     <ScrollView>
@@ -33,9 +113,14 @@ export const HomeScreen = () => {
         style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}
         bg={'white'}>
         <VStack flex={1} alignItems='center'>
-          <UserNameBar />
+          <UserNameBar _isLogin={isLogin} _userName={userName ?? ''} />
           <Box alignItems='center' p={5} flex={1} zIndex={3}>
-            <SearchInput />
+            <SearchInput
+              _onSubmit={value => {
+                navigateTo('SearchList', value)
+              }}
+              _isLogin={isLogin}
+            />
           </Box>
           <Box alignItems='center' p={5} flex={1}>
             <Center position='absolute' zIndex={2} bottom={'18px'} right={0}>
@@ -111,7 +196,12 @@ export const HomeScreen = () => {
                   top={'75px'}
                   px='6'
                   py='1.5'>
-                  <Button rounded={100} bg={'#40BEEE'}>
+                  <Button
+                    rounded={100}
+                    bg={'#40BEEE'}
+                    onPress={() => {
+                      navigateTo('Chat', {})
+                    }}>
                     Conducting Chat
                   </Button>
                 </Center>
@@ -125,110 +215,17 @@ export const HomeScreen = () => {
             <Spacer />
           </HStack>
           <ScrollView horizontal={true} pb={5} px={5} pt={2}>
-            <TouchableOpacity>
-              <Box pr={4}>
-                <Box
-                  bg={'#ffffff'}
-                  borderWidth={1}
-                  borderColor={'#eaeaea'}
-                  p={2}
-                  rounded={10}>
-                  <HStack
-                    flex={1}
-                    alignItems={'center'}
-                    justifyContent={'center'}>
-                    <Box p={3} bg={'#E75B5B'} rounded={8}>
-                      <MaterialCommunityIcons
-                        name='human'
-                        size={30}
-                        color={'white'}
-                      />
-                    </Box>
-                    <Text px={3} color={'#545454'} w={'100px'}>
-                      General Practitioner
-                    </Text>
-                  </HStack>
-                </Box>
-              </Box>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Box pr={4}>
-                <Box
-                  bg={'#ffffff'}
-                  borderWidth={1}
-                  borderColor={'#eaeaea'}
-                  p={2}
-                  rounded={10}>
-                  <HStack
-                    flex={1}
-                    alignItems={'center'}
-                    justifyContent={'center'}>
-                    <Box p={3} bg={'#0064A9'} rounded={8}>
-                      <MaterialCommunityIcons
-                        name='cards-heart'
-                        size={30}
-                        color={'white'}
-                      />
-                    </Box>
-                    <Text px={3} color={'#545454'} w={'100px'}>
-                      Internal Medicine
-                    </Text>
-                  </HStack>
-                </Box>
-              </Box>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Box pr={4}>
-                <Box
-                  bg={'#ffffff'}
-                  borderWidth={1}
-                  borderColor={'#eaeaea'}
-                  p={2}
-                  rounded={10}>
-                  <HStack
-                    flex={1}
-                    alignItems={'center'}
-                    justifyContent={'center'}>
-                    <Box p={3} bg={'#DFDF4B'} rounded={8}>
-                      <MaterialCommunityIcons
-                        name='hand-back-right-outline'
-                        size={30}
-                        color={'white'}
-                      />
-                    </Box>
-                    <Text px={3} color={'#545454'} w={'100px'}>
-                      Dermatology
-                    </Text>
-                  </HStack>
-                </Box>
-              </Box>
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Box pr={4}>
-                <Box
-                  bg={'#ffffff'}
-                  borderWidth={1}
-                  borderColor={'#eaeaea'}
-                  p={2}
-                  rounded={10}>
-                  <HStack
-                    flex={1}
-                    alignItems={'center'}
-                    justifyContent={'center'}>
-                    <Box p={3} bg={'#B48CE7'} rounded={8}>
-                      <MaterialCommunityIcons
-                        name='eye-outline'
-                        size={30}
-                        color={'white'}
-                      />
-                    </Box>
-                    <Text px={3} color={'#545454'} w={'100px'}>
-                      Ophthalmology
-                    </Text>
-                  </HStack>
-                </Box>
-              </Box>
-            </TouchableOpacity>
+            {categoriesList.map((e, i) => {
+              return (
+                <CategoriesCard
+                  key={i}
+                  icon={categoriesIconAndBG[i].icon}
+                  iconBG={categoriesIconAndBG[i].iconBg}
+                  title={e}
+                  _isLogin={isLogin}
+                />
+              )
+            })}
           </ScrollView>
           <HStack px={5} py={2}>
             <Text fontSize={20} fontWeight={600}>
@@ -267,5 +264,50 @@ export const HomeScreen = () => {
         </VStack>
       </View>
     </ScrollView>
+  )
+}
+
+const CategoriesCard: FC<{
+  icon: ReactNode
+  iconBG: string
+  title: string
+  _isLogin: boolean
+}> = ({icon, iconBG, title, _isLogin}) => {
+  const toast = useToast()
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        if (_isLogin) {
+          navigateTo('SearchList', {categories: title})
+        } else {
+          toast.show({
+            title: 'Must be logged in to use',
+            placement: 'top',
+          })
+        }
+      }}>
+      <Box pr={4}>
+        <Box
+          bg={'#ffffff'}
+          borderWidth={1}
+          borderColor={'#eaeaea'}
+          p={2}
+          rounded={10}>
+          <HStack flex={1} alignItems={'center'} justifyContent={'center'}>
+            <Box p={3} bg={iconBG} rounded={8}>
+              {icon}
+            </Box>
+            <Text
+              px={3}
+              color={'#545454'}
+              w={'100px'}
+              overflow={'hidden'}
+              h={'60px'}>
+              {title}
+            </Text>
+          </HStack>
+        </Box>
+      </Box>
+    </TouchableOpacity>
   )
 }
