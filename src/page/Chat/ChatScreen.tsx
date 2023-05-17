@@ -88,23 +88,38 @@ export const ChatScreen = () => {
 
     let onSpeechText = async (msg: any, data: any) => {}
 
+    let addCustomMsg = async (msg: any, data: any) => {
+      onSend([
+        {
+          _id: makeid(20),
+          createdAt: new Date(),
+          text: data,
+          user: {_id: 0, name: 'Bot'},
+          disable: true,
+        },
+      ])
+    }
+
     // add the function to the list of subscribers for a particular topic
     // we're keeping the returned token, in order to be able to unsubscribe
     // from the topic later on
     let token = PubSub.subscribe('ClearAllMessage', ClearAllMessage)
     let quickSend = PubSub.subscribe('QuickSendMessage', QuickSendMessage)
     let speechText = PubSub.subscribe('onSpeechText', onSpeechText)
+    let _addCustomMsg = PubSub.subscribe('addCustomMsg', addCustomMsg)
     return () => {
       setMessages([])
       PubSub.unsubscribe(token)
       PubSub.unsubscribe(quickSend)
       PubSub.unsubscribe(speechText)
+      PubSub.unsubscribe(_addCustomMsg)
     }
   }, [])
 
   const onSend = useCallback((messages: any[] = []) => {
     setNeedClearValue(true)
     const messageString = messages[0]?.text
+    const isDeSend = messages[0]?.disable
     let onlyUpload = false
     if (
       messageString ==
@@ -112,23 +127,29 @@ export const ChatScreen = () => {
     ) {
       onlyUpload = true
     }
-    setMessages(previousMessages => {
-      messages = [
-        {
-          _id: makeid(20),
-          createdAt: new Date(),
-          text: (
-            <BotMessageBox
-              sendMessage={messageString}
-              onlyUpload={onlyUpload}
-            />
-          ),
-          user: {_id: 0, name: 'Bot'},
-        },
-        ...messages,
-      ]
-      return GiftedChat.append(previousMessages, messages)
-    })
+    if (!isDeSend) {
+      setMessages(previousMessages => {
+        messages = [
+          {
+            _id: makeid(20),
+            createdAt: new Date(),
+            text: (
+              <BotMessageBox
+                sendMessage={messageString}
+                onlyUpload={onlyUpload}
+              />
+            ),
+            user: {_id: 0, name: 'Bot'},
+          },
+          ...messages,
+        ]
+        return GiftedChat.append(previousMessages, messages)
+      })
+    } else {
+      setMessages(previousMessages => {
+        return GiftedChat.append(previousMessages, messages)
+      })
+    }
   }, [])
 
   const customInputToolbar = (props: any) => {

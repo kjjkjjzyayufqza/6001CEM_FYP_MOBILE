@@ -8,10 +8,12 @@ import {
   CheckIcon,
   FlatList,
   HStack,
+  Heading,
   Image,
   Pressable,
   Select,
   Spacer,
+  Spinner,
   Text,
   VStack,
   View,
@@ -50,7 +52,7 @@ import {LocationModel} from '../../MOCK/LocationPoint'
 import {getDoctor} from '../../API'
 import {useNavigation} from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { navigateTo } from '../../components/RootNavigation'
+import {navigateTo} from '../../components/RootNavigation'
 
 export const SearchListScreen = () => {
   // ref
@@ -66,10 +68,7 @@ export const SearchListScreen = () => {
     bottomSheetModalRef_filter.current?.present()
   }, [])
 
-  const [currentLocation, setCurrentLocation] = useState<LocationModel>({
-    latitude: 0,
-    longitude: 0,
-  })
+  const [currentLocation, setCurrentLocation] = useState<LocationModel>()
 
   const [doctorList, setDoctorList] = useState<MOCK_DATA_DOCTOR_MODEL[]>([])
   const [searchName, setSearchName] = useState<string>('')
@@ -282,19 +281,44 @@ export const SearchListScreen = () => {
 
 const RenderItemDoctorList: FC<{
   item: MOCK_DATA_DOCTOR_MODEL
-  _CurrentLocation: LocationModel
+  _CurrentLocation?: LocationModel
 }> = ({item, _CurrentLocation}) => {
-  const Distance = geolib.getPreciseDistance(
-    _CurrentLocation,
-    item.locationPoint,
+  console.log(_CurrentLocation)
+  const [Distance, setDistance] = useState<number | undefined>()
+  useEffect(() => {
+    if (_CurrentLocation) {
+      setDistance(
+        geolib.getPreciseDistance(_CurrentLocation, item.locationPoint) * 0.000621,
+      )
+    }
+  })
+
+  let disEle = (
+    <HStack>
+      <MaterialIcons name={'location-on'} size={15} style={{marginTop: 3}} />
+      <Text fontSize='sm' color='gray.400'>
+        Distance from you : {Distance && Distance.toFixed(2)} KM
+      </Text>
+    </HStack>
   )
-  const Meters = Distance * 0.000621 * 1609.344
+
+  if (!_CurrentLocation) {
+    disEle = (
+      <HStack space={2}>
+        <Spinner accessibilityLabel='Loading posts' color='gray.500'/>
+        <Heading color='gray.500' fontSize='md'>
+          Loading
+        </Heading>
+      </HStack>
+    )
+  }
 
   return (
     <Box p={3}>
-      <Pressable onPress={() => {
-        navigateTo('Detail',item)
-      }}>
+      <Pressable
+        onPress={() => {
+          navigateTo('Detail', item)
+        }}>
         <Box
           rounded='lg'
           borderColor='coolGray.200'
@@ -377,16 +401,7 @@ const RenderItemDoctorList: FC<{
               </Box>
             </HStack>
             <Box w={'300px'} mt={2} h={100}>
-              <HStack>
-                <MaterialIcons
-                  name={'location-on'}
-                  size={15}
-                  style={{marginTop: 3}}
-                />
-                <Text fontSize='sm' color='gray.400'>
-                  Distance from you : {Meters.toFixed(2)} M
-                </Text>
-              </HStack>
+              {disEle}
             </Box>
           </VStack>
         </Box>

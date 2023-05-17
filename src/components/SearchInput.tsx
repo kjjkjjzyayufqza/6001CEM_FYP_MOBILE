@@ -5,7 +5,10 @@ import {Send} from 'react-native-gifted-chat'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import {Basestyles} from '../../Styles/Styles'
 import {Formik} from 'formik'
-import {createNavigationContainerRef, useIsFocused} from '@react-navigation/native'
+import {
+  createNavigationContainerRef,
+  useIsFocused,
+} from '@react-navigation/native'
 import {navigateTo} from './RootNavigation'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -31,6 +34,21 @@ export const SearchInput: React.FC<SearchInputModel> = ({
   useEffect(() => {
     setIsLogin(_isLogin)
   }, [_isLogin])
+
+  useEffect(() => {
+    isFocused &&
+      AsyncStorage.getItem('isLogin').then(value => {
+        if (value != null) {
+          if (value == 'true') {
+            setIsLogin(true)
+          } else {
+            setIsLogin(false)
+          }
+        } else {
+          setIsLogin(false)
+        }
+      })
+  }, [isFocused])
 
   return (
     <Formik

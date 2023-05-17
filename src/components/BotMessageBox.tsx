@@ -21,6 +21,7 @@ import {
   View,
   Image,
   Progress,
+  useToast,
 } from 'native-base'
 import React, {FC, ReactNode, useEffect, useRef, useState} from 'react'
 import {postBotMessage, postImage} from '../API'
@@ -87,7 +88,7 @@ export const BotMessageBox: React.FC<BotMessageBoxModel> = ({
   useEffect(() => {
     if (!onlyUpload && onlyUpload == false)
       if (sendMessage) {
-        // console.log('ready to call')
+        // console.log('ready to call',sendMessage)
         setMessage(
           <HStack space={2} justifyContent='center'>
             <Spinner accessibilityLabel='Loading posts' color='indigo.500' />
@@ -122,6 +123,12 @@ export const BotMessageBox: React.FC<BotMessageBoxModel> = ({
                 )
                 if (botMessage.startsWith('skin issue')) {
                   setIsSkinIssue(true)
+                  PubSub.publish(
+                    'addCustomMsg',
+                    <View>
+                      <ImageUploadBox />
+                    </View>,
+                  )
                 }
                 setMessage(message)
                 // console.log(res.data.botMessage)
@@ -152,7 +159,7 @@ export const BotMessageBox: React.FC<BotMessageBoxModel> = ({
         <>
           <Text>{message}</Text>
           {showSuggestions}
-          {isSkinIssue && <ImageUploadBox />}
+          {/* {isSkinIssue && <ImageUploadBox />} */}
         </>
       ) : (
         <ImageUploadBox />
@@ -236,7 +243,7 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
           }}
           keyExtractor={(item, index) => index.toString()}
         />
-
+        <Divider my={5} />
         <Text>
           In the meantime, I recommend the following of doctors to you
         </Text>
@@ -283,7 +290,7 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
     getUserLocation()
       .then(res => {
         const cal_Distance = geolib.getPreciseDistance(locationPointData, res)
-        setResultValue(cal_Distance * 0.000621 * 1609.344)
+        setResultValue(cal_Distance * 0.000621)
         setIsLoadingDistance(false)
       })
       .catch(err => {})
@@ -384,7 +391,7 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
                     fontSize='sm'
                     color='gray.400'
                     style={{textAlign: 'left'}}>
-                    Distance from you {resultValue && resultValue.toFixed(2)}M
+                    Distance from you {resultValue && resultValue.toFixed(2)} KM
                   </Text>
                 </VStack>
               )}
@@ -416,7 +423,7 @@ const ImageUploadBox: FC<any> = () => {
       }
     })
   }
-
+  const toast = useToast();
   useEffect(() => {
     if (imageUrl) {
       const fmData = new FormData()
@@ -429,9 +436,17 @@ const ImageUploadBox: FC<any> = () => {
       postImage(fmData)
         .then(res => {
           // console.log(res)
+          toast.show({
+            title: "Image Upload Success",
+            placement: "top"
+          })
           setResponse(res.data)
         })
         .catch(err => {
+          toast.show({
+            title: "Image Upload Error",
+            placement: "top"
+          })
           console.log(err)
         })
     }

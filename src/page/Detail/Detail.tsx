@@ -5,6 +5,7 @@ import {
   Divider,
   HStack,
   Image,
+  ScrollView,
   Text,
   VStack,
   View,
@@ -31,15 +32,17 @@ export const Detail = () => {
   }, [])
 
   return (
-    <VStack bg={'white'}>
+    <ScrollView bg={'white'}>
       <AspectRatio ratio={4 / 5}>
-        {doctor?.image && <Image
-          resizeMode='cover'
-          source={{
-            uri: doctor?.image,
-          }}
-          alt='Picture of a Flower'
-        />}
+        {doctor?.image && (
+          <Image
+            resizeMode='cover'
+            source={{
+              uri: doctor?.image,
+            }}
+            alt='Picture of a Flower'
+          />
+        )}
       </AspectRatio>
       <Box
         bg={'white'}
@@ -58,6 +61,7 @@ export const Detail = () => {
               <Text fontSize={'15px'} color='gray.400'>
                 {doctor?.category}
               </Text>
+
             </VStack>
             <Button bg={'#4AC18E'} rounded={10}>
               <MaterialCommunityIcons name='phone' size={30} color={'white'} />
@@ -65,10 +69,22 @@ export const Detail = () => {
           </HStack>
           <Divider my={6} />
           <Text fontSize={'18px'} fontWeight={700}>
+            Phone
+          </Text>
+          <Text fontSize={'15px'} color='gray.400'>
+            {doctor?.mobile}
+          </Text>
+          <Text fontSize={'18px'} fontWeight={700} mt={5}>
             About
           </Text>
           <Text fontSize={'15px'} color='gray.400'>
             {doctor?.about}
+          </Text>
+          <Text fontSize={'18px'} fontWeight={700} mt={5}>
+            Location
+          </Text>
+          <Text fontSize={'15px'} color='gray.400'>
+            {doctor?.location}
           </Text>
           <Text fontSize={'18px'} fontWeight={700} mt={5}>
             Working hours
@@ -106,6 +122,6 @@ export const Detail = () => {
           </HStack>
         </VStack>
       </Box>
-    </VStack>
+    </ScrollView>
   )
 }
