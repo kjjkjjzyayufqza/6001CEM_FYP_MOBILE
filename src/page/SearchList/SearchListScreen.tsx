@@ -283,7 +283,7 @@ const RenderItemDoctorList: FC<{
   item: MOCK_DATA_DOCTOR_MODEL
   _CurrentLocation?: LocationModel
 }> = ({item, _CurrentLocation}) => {
-  console.log(_CurrentLocation)
+  // console.log(_CurrentLocation)
   const [Distance, setDistance] = useState<number | undefined>()
   useEffect(() => {
     if (_CurrentLocation) {
