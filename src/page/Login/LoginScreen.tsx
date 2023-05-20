@@ -39,8 +39,8 @@ export const LoginScreen = () => {
     open: false,
     message: '',
   })
+  const [isLoginLoading, setIsLoginLoading] = useState<boolean>(false)
   const toast = useToast()
-
 
   useEffect(() => {
     if (isOpenTop) {
@@ -68,17 +68,22 @@ export const LoginScreen = () => {
         <Formik
           initialValues={{email: '', password: ''}}
           onSubmit={values => {
+            setIsLoginLoading(true)
             const hash_ps = SHA256(values.password).toString()
             // console.log(values.password, hash_ps)
             login({email: values.email, password: hash_ps})
               .then(res => {
+                setIsLoginLoading(false)
                 uploadLocalStr(res.data)
-                setIsOpenTop({open: true, message: 'Login successful'})
                 getToken()
+                toast.show({
+                  description: "Login Success"
+                })
                 navigateTo('Main', {})
               })
               .catch(err => {
                 console.log(err)
+                setIsLoginLoading(false)
                 toast.show({
                   description: 'Incorrect email or password',
                   placement: 'top',
@@ -143,6 +148,7 @@ export const LoginScreen = () => {
               </HStack>
               <Box pt={4}>
                 <Button
+                  isLoading={isLoginLoading}
                   bg={'#1EADF1'}
                   onPress={() => {
                     handleSubmit()

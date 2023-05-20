@@ -28,9 +28,19 @@ export default function getUserLocation() {
         resolve({latitude, longitude});
       },
       error => {
-        reject(error);
+        //如果精準定位沒有用，就轉為用wifi定位
+        Location.getCurrentPosition(
+          position => {
+            const {latitude, longitude} = position.coords;
+            resolve({latitude, longitude});
+          },
+          error => {
+            reject(error);
+          },
+          {enableHighAccuracy: false, timeout: 5000, maximumAge: 10000},
+        );
       },
-      {enableHighAccuracy: true, timeout: 15000, maximumAge: 5},
+      {enableHighAccuracy: true, timeout: 5000, maximumAge: 1000},
     );
   });
 }

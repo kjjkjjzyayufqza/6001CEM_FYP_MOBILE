@@ -284,6 +284,7 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
   // console.log()
   const [resultValue, setResultValue] = useState<number>()
   const [isLoadingDistance, setIsLoadingDistance] = useState<boolean>(true)
+  const [distanceError, setDistanceError] = useState<boolean>(false)
 
   useEffect(() => {
     // setResultValue(getMeters(locationPointData[0]))
@@ -293,7 +294,11 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
         setResultValue(cal_Distance * 0.000621)
         setIsLoadingDistance(false)
       })
-      .catch(err => {})
+      .catch(err => {
+        console.log(err)
+        setDistanceError(true)
+        setIsLoadingDistance(false)
+      })
   }, [])
   // console.log('resultValue is ', resultValue)
   return (
@@ -387,12 +392,23 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
                     top={2}>
                     {_doctorData.location}
                   </Text>
-                  <Text
-                    fontSize='sm'
-                    color='gray.400'
-                    style={{textAlign: 'left'}}>
-                    Distance from you {resultValue && resultValue.toFixed(2)} KM
-                  </Text>
+                  {!distanceError && (
+                    <Text
+                      fontSize='sm'
+                      color='gray.400'
+                      style={{textAlign: 'left'}}>
+                      Distance from you {resultValue && resultValue.toFixed(2)}{' '}
+                      KM
+                    </Text>
+                  )}
+                  {distanceError && (
+                    <Text
+                      fontSize='sm'
+                      color='#FF5D00'
+                      style={{textAlign: 'left'}}>
+                      Failed to get distance
+                    </Text>
+                  )}
                 </VStack>
               )}
             </Box>
@@ -405,6 +421,7 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
 
 const ImageUploadBox: FC<any> = () => {
   const [imageUrl, setImageUrl] = useState<ImagePicker.Asset>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [response, setResponse] = useState<BotImageResponseModel>()
 
   const chooseImage = () => {
@@ -423,7 +440,7 @@ const ImageUploadBox: FC<any> = () => {
       }
     })
   }
-  const toast = useToast();
+  const toast = useToast()
   useEffect(() => {
     if (imageUrl) {
       const fmData = new FormData()
@@ -433,20 +450,23 @@ const ImageUploadBox: FC<any> = () => {
         type: imageUrl?.type,
         name: imageUrl?.fileName,
       })
+      setIsLoading(true)
       postImage(fmData)
         .then(res => {
           // console.log(res)
           toast.show({
-            title: "Image Upload Success",
-            placement: "top"
+            title: 'Image Upload Success',
+            placement: 'top',
           })
+          setIsLoading(false)
           setResponse(res.data)
         })
         .catch(err => {
           toast.show({
-            title: "Image Upload Error",
-            placement: "top"
+            title: 'Image Upload Error',
+            placement: 'top',
           })
+          setIsLoading(false)
           console.log(err)
         })
     }
@@ -512,6 +532,14 @@ const ImageUploadBox: FC<any> = () => {
         <Text my={3} color='#EB1111'>
           The image you provided is not a human skin, please reselect it!
         </Text>
+      )}
+      {isLoading && (
+        <HStack space={2} mt={5}>
+          <Spinner accessibilityLabel='Loading posts' />
+          <Heading color='primary.500' fontSize='md'>
+            Loading...
+          </Heading>
+        </HStack>
       )}
       {response && response.result && (
         <>

@@ -70,6 +70,7 @@ export const ChatScreen = () => {
     setMessages(defMessage)
 
     let ClearAllMessage = (msg: any, data: any) => {
+      toast.closeAll()
       setMessages(defMessage)
       toast.show({
         description: 'Dialogue has been reset',

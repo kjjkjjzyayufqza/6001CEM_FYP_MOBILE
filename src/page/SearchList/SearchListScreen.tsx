@@ -48,7 +48,7 @@ import {
 } from '../../MOCK'
 import Location from '@react-native-community/geolocation'
 import * as geolib from 'geolib'
-import {LocationModel} from '../../MOCK/LocationPoint'
+import getUserLocation, {LocationModel} from '../../MOCK/LocationPoint'
 import {getDoctor} from '../../API'
 import {useNavigation} from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -153,28 +153,13 @@ export const SearchListScreen = () => {
   }, [searchName])
 
   useEffect(() => {
-    Location.getCurrentPosition(
-      position => {
-        // console.log(position.coords)
-        // const a = {latitude: 22.300394, longitude: 114.23495}
-        // let b: any = {}
-        // b = {
-        //   latitude: position.coords.latitude,
-        //   longitude: position.coords.longitude,
-        // }
-        setCurrentLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        })
-        // const c = geolib.getPreciseDistance(a, b)
-        // console.log('Miles:', c * 0.000621)
-        // console.log('Meters:', c * 0.000621 * 1609.344)
-      },
-      error => {
-        console.log('Unable to get your location!')
-      },
-      {enableHighAccuracy: true, maximumAge: 1000},
-    )
+    getUserLocation()
+      .then(res => {
+        setCurrentLocation(res)
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }, [])
 
   return (
@@ -288,7 +273,8 @@ const RenderItemDoctorList: FC<{
   useEffect(() => {
     if (_CurrentLocation) {
       setDistance(
-        geolib.getPreciseDistance(_CurrentLocation, item.locationPoint) * 0.000621,
+        geolib.getPreciseDistance(_CurrentLocation, item.locationPoint) *
+          0.000621,
       )
     }
   })
@@ -305,7 +291,7 @@ const RenderItemDoctorList: FC<{
   if (!_CurrentLocation) {
     disEle = (
       <HStack space={2}>
-        <Spinner accessibilityLabel='Loading posts' color='gray.500'/>
+        <Spinner accessibilityLabel='Loading posts' color='gray.500' />
         <Heading color='gray.500' fontSize='md'>
           Loading
         </Heading>
