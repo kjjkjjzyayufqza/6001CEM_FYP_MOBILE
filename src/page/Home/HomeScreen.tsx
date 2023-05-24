@@ -39,7 +39,6 @@ export const HomeScreen = () => {
       AsyncStorage.getItem('isLogin').then(value => {
         if (value != null) {
           if (value == 'true') {
-            setIsLogin(true)
             getUser()
               .then(res => {
                 setIsLogin(true)
@@ -47,6 +46,7 @@ export const HomeScreen = () => {
               })
               .catch(err => {
                 console.log('Get User Fail')
+                AsyncStorage.clear()
               })
           } else {
             setIsLogin(false)

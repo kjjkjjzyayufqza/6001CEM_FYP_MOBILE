@@ -80,6 +80,8 @@ export const SearchListScreen = () => {
       }
     | undefined
   >(undefined)
+  const [currentLocationError, setCurrentLocationError] =
+    useState<boolean>(false)
   const navigation = useNavigation()
 
   useEffect(() => {
@@ -159,6 +161,7 @@ export const SearchListScreen = () => {
       })
       .catch(err => {
         console.log(err)
+        setCurrentLocationError(true)
       })
   }, [])
 
@@ -240,6 +243,7 @@ export const SearchListScreen = () => {
               <RenderItemDoctorList
                 item={item}
                 _CurrentLocation={currentLocation}
+                _currentLocationError={currentLocationError}
               />
             )
           }}></FlatList>
@@ -267,7 +271,8 @@ export const SearchListScreen = () => {
 const RenderItemDoctorList: FC<{
   item: MOCK_DATA_DOCTOR_MODEL
   _CurrentLocation?: LocationModel
-}> = ({item, _CurrentLocation}) => {
+  _currentLocationError?: boolean
+}> = ({item, _CurrentLocation, _currentLocationError}) => {
   // console.log(_CurrentLocation)
   const [Distance, setDistance] = useState<number | undefined>()
   useEffect(() => {
@@ -295,6 +300,16 @@ const RenderItemDoctorList: FC<{
         <Heading color='gray.500' fontSize='md'>
           Loading
         </Heading>
+      </HStack>
+    )
+  }
+  if (_currentLocationError) {
+    disEle = (
+      <HStack>
+        <MaterialIcons name={'location-on'} size={15} style={{marginTop: 3}} />
+        <Text fontSize='sm' color='#E41818'>
+          Distance Error
+        </Text>
       </HStack>
     )
   }
