@@ -273,14 +273,10 @@ const RecommendationNode: FC<RecommendationNodeModel> = ({
 const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
   const DoctorData = MOCK_DATA_DOCTOR
 
-  let locationPointData: LocationModel
-  let _doctorData: MOCK_DATA_DOCTOR_MODEL
-  DoctorData.map(e => {
-    if (e.category == SwitchDoctorCate(Type)) {
-      locationPointData = e.locationPoint
-      _doctorData = e
-    }
-  })
+  const [_doctorData, Set_doctorData] = useState<MOCK_DATA_DOCTOR_MODEL>()
+  let _doctorDataList: MOCK_DATA_DOCTOR_MODEL[] = []
+  let _doctorDataList_location: LocationModel[] = []
+
   // console.log()
   const [resultValue, setResultValue] = useState<number>()
   const [isLoadingDistance, setIsLoadingDistance] = useState<boolean>(true)
@@ -288,9 +284,26 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
 
   useEffect(() => {
     // setResultValue(getMeters(locationPointData[0]))
+
+    DoctorData.map(e => {
+      if (e.category == SwitchDoctorCate(Type)) {
+        _doctorDataList.push(e)
+        _doctorDataList_location.push(e.locationPoint)
+      }
+    })
+
     getUserLocation()
       .then(res => {
-        const cal_Distance = geolib.getPreciseDistance(locationPointData, res)
+        const close_list: number[] = []
+        for (let i = 0; i < _doctorDataList_location.length; i++) {
+          close_list.push(
+            geolib.getPreciseDistance(_doctorDataList_location[i], res),
+          )
+        }
+
+        const cal_Distance = Math.min(...close_list)
+        const minIndex = close_list.indexOf(cal_Distance)
+        Set_doctorData(_doctorDataList[minIndex])
         setResultValue(cal_Distance * 0.000621)
         setIsLoadingDistance(false)
       })
@@ -301,122 +314,134 @@ const GetClosestDoctor: FC<{Type: any}> = ({Type}) => {
       })
   }, [])
   // console.log('resultValue is ', resultValue)
-  return (
-    <Box>
-      <Pressable
-        onPress={() => {
-          navigateTo('Detail', _doctorData)
-        }}>
-        {({isHovered, isFocused, isPressed}) => {
-          return (
-            <Box
-              bg={
-                isPressed
-                  ? 'coolGray.200'
-                  : isHovered
-                  ? 'coolGray.200'
-                  : 'coolGray.100'
-              }
-              style={{
-                transform: [
-                  {
-                    scale: isPressed ? 0.96 : 1,
-                  },
-                ],
-              }}
-              p={2}
-              h={'140px'}
-              borderRadius={5}
-              shadow={1}>
-              <HStack>
-                <Image
-                  style={{
-                    width: 100,
-                    height: 65,
-                    resizeMode: 'cover',
-                    borderRadius: 5,
-                  }}
-                  source={{uri: _doctorData.image}}
-                  alt='image'
-                />
-                <VStack flex={1} px={1}>
-                  <View h={'20px'} overflow={'hidden'}>
-                    <Text
-                      color='#0080EA'
-                      fontWeight='600'
-                      fontSize='18px'
-                      lineHeight={'19px'}>
-                      {_doctorData.name}
-                    </Text>
-                  </View>
-                  <Text fontSize='13px' color='#9E9E9E' mb={-1} mt={2}>
-                    Category
-                  </Text>
-                  <Text
-                    fontSize='16px'
-                    color='#373737'
-                    h={'20px'}
-                    overflow={'hidden'}>
-                    {SwitchDoctorCate(Type ?? '')}
-                  </Text>
 
-                  {/* <Text
+  if (_doctorData) {
+    return (
+      <Box>
+        <Pressable
+          onPress={() => {
+            navigateTo('Detail', _doctorData)
+          }}>
+          {({isHovered, isFocused, isPressed}) => {
+            return (
+              <Box
+                bg={
+                  isPressed
+                    ? 'coolGray.200'
+                    : isHovered
+                    ? 'coolGray.200'
+                    : 'coolGray.100'
+                }
+                style={{
+                  transform: [
+                    {
+                      scale: isPressed ? 0.96 : 1,
+                    },
+                  ],
+                }}
+                p={2}
+                h={'140px'}
+                borderRadius={5}
+                shadow={1}>
+                <HStack>
+                  <Image
+                    style={{
+                      width: 100,
+                      height: 65,
+                      resizeMode: 'cover',
+                      borderRadius: 5,
+                    }}
+                    source={{uri: _doctorData.image}}
+                    alt='image'
+                  />
+                  <VStack flex={1} px={1}>
+                    <View h={'20px'} overflow={'hidden'}>
+                      <Text
+                        color='#0080EA'
+                        fontWeight='600'
+                        fontSize='18px'
+                        lineHeight={'19px'}>
+                        {_doctorData.name}
+                      </Text>
+                    </View>
+                    <Text fontSize='13px' color='#9E9E9E' mb={-1} mt={2}>
+                      Category
+                    </Text>
+                    <Text
+                      fontSize='16px'
+                      color='#373737'
+                      h={'20px'}
+                      overflow={'hidden'}>
+                      {SwitchDoctorCate(Type ?? '')}
+                    </Text>
+
+                    {/* <Text
                 fontSize='sm'
                 color='#0080EA'
                 style={{textAlign: 'right'}}>
                 Read More...
               </Text> */}
-                </VStack>
-              </HStack>
-
-              <Text
-                fontSize='sm'
-                color='black'
-                style={{textAlign: 'left'}}
-                top={3}>
-                Recommends the doctor closest to you.
-              </Text>
-              {isLoadingDistance ? (
-                <HStack space={2} top={6}>
-                  <Spinner accessibilityLabel='Loading posts' />
-                  <Text color='gray.400' fontSize='sm'>
-                    Loading
-                  </Text>
+                  </VStack>
                 </HStack>
-              ) : (
-                <VStack>
-                  <Text
-                    fontSize='14px'
-                    color='#0099EB'
-                    overflow={'hidden'}
-                    top={2}>
-                    {_doctorData.location}
-                  </Text>
-                  {!distanceError && (
-                    <Text
-                      fontSize='sm'
-                      color='gray.400'
-                      style={{textAlign: 'left'}}>
-                      Distance from you {resultValue && resultValue.toFixed(2)}{' '}
-                      KM
+
+                <Text
+                  fontSize='sm'
+                  color='black'
+                  style={{textAlign: 'left'}}
+                  top={3}>
+                  Recommends the doctor closest to you.
+                </Text>
+                {isLoadingDistance ? (
+                  <HStack space={2} top={6}>
+                    <Spinner accessibilityLabel='Loading posts' />
+                    <Text color='gray.400' fontSize='sm'>
+                      Loading
                     </Text>
-                  )}
-                  {distanceError && (
+                  </HStack>
+                ) : (
+                  <VStack>
                     <Text
-                      fontSize='sm'
-                      color='#FF5D00'
-                      style={{textAlign: 'left'}}>
-                      Failed to get distance
+                      fontSize='14px'
+                      color='#0099EB'
+                      overflow={'hidden'}
+                      top={2}>
+                      {_doctorData.location}
                     </Text>
-                  )}
-                </VStack>
-              )}
-            </Box>
-          )
-        }}
-      </Pressable>
-    </Box>
-  )
+                    {!distanceError && (
+                      <Text
+                        fontSize='sm'
+                        color='gray.400'
+                        style={{textAlign: 'left'}}>
+                        Distance from you{' '}
+                        {resultValue && resultValue.toFixed(2)} KM
+                      </Text>
+                    )}
+                    {distanceError && (
+                      <Text
+                        fontSize='sm'
+                        color='#FF5D00'
+                        style={{textAlign: 'left'}}>
+                        Failed to get distance
+                      </Text>
+                    )}
+                  </VStack>
+                )}
+              </Box>
+            )
+          }}
+        </Pressable>
+      </Box>
+    )
+  } else {
+    return (
+      <HStack space={8} justifyContent='center' alignItems='center'>
+        <Spinner size='lg' />
+        <Heading color='#383838' fontSize='md'>
+          Getting doctor...
+        </Heading>
+      </HStack>
+    )
+  }
 }
 
 const ImageUploadBox: FC<any> = () => {
